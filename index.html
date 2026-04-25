@@ -1,603 +1,852 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>mail.wimp.best — your account</title>
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { height: 100%; overflow: hidden; }
-body {
-  background: #000;
-  color: #fff;
-  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
-  -webkit-font-smoothing: antialiased;
-  font-size: 12px;
-}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>mail.wimp.best — secure onion inbox</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-::-webkit-scrollbar { width: 3px; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 3px; }
-::-webkit-scrollbar-track { background: transparent; }
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
 
-a { color: rgba(255,255,255,0.4); text-decoration: none; }
-a:hover { color: rgba(255,255,255,0.8); }
+    body {
+      background: #000000;
+      color: #eef2ff;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+      -webkit-font-smoothing: antialiased;
+      font-size: 12px;
+    }
 
-/* auth / register panels */
-#auth-screen, #register-screen {
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.auth-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  width: 300px;
-}
-.auth-title {
-  font-size: 11px;
-  letter-spacing: 6px;
-  text-transform: uppercase;
-  opacity: 0.2;
-  margin-bottom: 8px;
-}
-.auth-field { width: 100%; position: relative; }
-.auth-field input {
-  width: 100%;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  color: #fff;
-  font-family: inherit;
-  font-size: 13px;
-  padding: 8px 0;
-  outline: none;
-  text-align: center;
-  letter-spacing: 1px;
-  transition: border-color 0.25s;
-}
-.auth-field input:focus { border-color: rgba(255,255,255,0.3); }
-.auth-field input::placeholder { color: rgba(255,255,255,0.12); }
-.field-line {
-  position: absolute;
-  bottom: 0; left: 50%;
-  width: 0; height: 1px;
-  background: rgba(255,255,255,0.5);
-  transition: width 0.3s, left 0.3s;
-}
-.auth-field input:focus ~ .field-line { width: 100%; left: 0; }
-.auth-links { font-size: 10px; letter-spacing: 2px; opacity: 0.3; }
-.auth-links a { color: #fff; }
-.err { font-size: 10px; color: rgba(255,80,80,0.7); letter-spacing: 1px; min-height: 14px; text-align: center; }
-.ok  { font-size: 10px; color: rgba(80,255,120,0.7); letter-spacing: 1px; min-height: 14px; text-align: center; }
-.btn {
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.08);
-  color: rgba(255,255,255,0.4);
-  font-family: inherit;
-  font-size: 10px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  padding: 10px 28px;
-  cursor: pointer;
-  transition: all 0.25s;
-  border-radius: 2px;
-}
-.btn:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.8); }
-.btn:active { transform: scale(0.98); }
-.btn-sm { padding: 6px 14px; font-size: 9px; letter-spacing: 2px; }
-.btn-danger { border-color: rgba(255,80,80,0.15); color: rgba(255,80,80,0.4); }
-.btn-primary { border-color: rgba(88,101,242,0.3); color: rgba(88,101,242,0.7); }
-.btn-icon {
-  background: transparent;
-  border: none;
-  color: rgba(255,255,255,0.3);
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 11px;
-  padding: 4px 8px;
-  transition: color 0.2s;
-}
-.btn-icon:hover { color: rgba(255,255,255,0.8); }
+    /* custom scrollbar */
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+    ::-webkit-scrollbar-track { background: transparent; }
 
-/* app shell */
-#app { display: none; height: 100vh; flex-direction: column; }
-.topbar {
-  height: 44px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-  gap: 20px;
-  flex-shrink: 0;
-}
-.topbar-logo { font-size: 11px; letter-spacing: 6px; text-transform: uppercase; opacity: 0.2; }
-.topbar-email { font-size: 10px; letter-spacing: 1px; opacity: 0.3; }
-.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
-.main { display: flex; flex: 1; overflow: hidden; }
+    a { color: rgba(255,255,255,0.35); text-decoration: none; transition: 0.2s; }
+    a:hover { color: rgba(255,255,255,0.7); }
 
-/* sidebar */
-.sidebar {
-  width: 200px;
-  border-right: 1px solid rgba(255,255,255,0.05);
-  display: flex;
-  flex-direction: column;
-  padding: 16px 0;
-  flex-shrink: 0;
-}
-.compose-btn {
-  margin: 0 12px 16px;
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.08);
-  color: rgba(255,255,255,0.5);
-  font-family: inherit;
-  font-size: 10px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  padding: 10px;
-  cursor: pointer;
-  transition: all 0.25s;
-  border-radius: 2px;
-  text-align: center;
-}
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 16px;
-  cursor: pointer;
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.25);
-  transition: all 0.2s;
-  border-left: 2px solid transparent;
-}
-.nav-item.active { color: rgba(255,255,255,0.8); border-left-color: rgba(255,255,255,0.4); }
-.nav-count { margin-left: auto; font-size: 9px; opacity: 0.5; background: rgba(255,255,255,0.07); padding: 1px 5px; border-radius: 8px; }
+    /* ----- AUTH / REGISTER SCREENS (dark minimal) ----- */
+    #auth-screen, #register-screen {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 30% 20%, #0a0a0c, #000000);
+    }
 
-/* list pane */
-.email-list-pane {
-  width: 320px;
-  border-right: 1px solid rgba(255,255,255,0.05);
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-}
-.pane-header {
-  padding: 14px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  display: flex;
-  align-items: center;
-}
-.pane-title { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; opacity: 0.4; }
-.pane-actions { margin-left: auto; display: flex; gap: 4px; }
-.search-bar { padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-.search-bar input {
-  width: 100%;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 2px;
-  color: #fff;
-  font-family: inherit;
-  font-size: 11px;
-  padding: 6px 10px;
-  outline: none;
-}
-.email-list { overflow-y: auto; flex: 1; }
-.email-item {
-  padding: 12px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-  cursor: pointer;
-  transition: background 0.15s;
-  position: relative;
-}
-.email-item.unread .email-from { color: rgba(255,255,255,0.9); font-weight: bold; }
-.email-item.unread::before {
-  content: '';
-  position: absolute;
-  left: 6px; top: 50%;
-  transform: translateY(-50%);
-  width: 4px; height: 4px;
-  border-radius: 50%;
-  background: rgba(88,101,242,0.8);
-}
-.email-from { font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.email-subject { font-size: 11px; color: rgba(255,255,255,0.35); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.email-time { font-size: 9px; color: rgba(255,255,255,0.2); letter-spacing: 1px; white-space: nowrap; }
-.detail-pane { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-.detail-empty { flex:1; display: flex; align-items: center; justify-content: center; opacity: 0.1; font-size: 10px; letter-spacing: 4px; }
-.detail-header { padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-.detail-subject { font-size: 15px; margin-bottom: 10px; color: rgba(255,255,255,0.8); }
-.detail-meta-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-.detail-meta { font-size: 10px; color: rgba(255,255,255,0.25); }
-.detail-meta span { color: rgba(255,255,255,0.5); }
-.detail-actions { margin-left: auto; display: flex; gap: 6px; }
-.detail-body { flex:1; overflow-y: auto; padding: 24px; }
-.detail-body-text { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.8; white-space: pre-wrap; }
-.reply-area { border-top: 1px solid rgba(255,255,255,0.05); padding: 16px 24px; }
-.reply-area textarea { width: 100%; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07); border-radius: 2px; color: rgba(255,255,255,0.7); font-family: inherit; font-size: 12px; padding: 10px; resize: vertical; min-height: 80px; outline: none; }
-.reply-actions { display: flex; gap: 8px; margin-top: 10px; }
+    .auth-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+      width: 300px;
+      background: rgba(6, 6, 8, 0.65);
+      backdrop-filter: blur(8px);
+      padding: 32px 28px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.5);
+    }
 
-/* modal */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 100; }
-.modal { background: #0a0a0a; border: 1px solid rgba(255,255,255,0.08); width: 540px; max-width: 95vw; display: flex; flex-direction: column; }
-.modal-header { padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; opacity: 0.5; }
-.modal-field { padding: 10px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; gap: 12px; align-items: center; }
-.modal-field label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.3; width: 40px; }
-.modal-field input, .modal-field textarea { background: transparent; border: none; color: rgba(255,255,255,0.7); font-family: inherit; font-size: 12px; outline: none; flex:1; }
-.modal-body { padding: 16px 20px; }
-.modal-body textarea { width:100%; background:transparent; border:none; color: rgba(255,255,255,0.6); font-size:12px; line-height:1.8; outline:none; min-height:180px; resize:vertical; }
-.modal-footer { padding: 12px 20px; border-top: 1px solid rgba(255,255,255,0.05); display:flex; gap:8px; align-items: center; }
-.toast { position: fixed; bottom: 24px; right: 24px; background: #111; border: 1px solid rgba(255,255,255,0.08); padding: 12px 20px; font-size: 10px; letter-spacing: 2px; opacity: 0; transition: opacity 0.2s; z-index:200; border-radius:2px; pointer-events:none; }
-.toast.show { opacity: 1; }
-.loader { display: inline-block; width: 12px; height: 12px; border: 1px solid rgba(255,255,255,0.1); border-top-color: rgba(255,255,255,0.4); border-radius: 50%; animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.live-dot { width: 6px; height:6px; border-radius:50%; background: rgba(80,200,100,0.6); display:inline-block; animation: pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
-.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 150px; gap: 8px; opacity: 0.3; }
-.fade-in { animation: fadeIn 0.3s ease; }
-@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-</style>
+    .auth-title {
+      font-size: 12px;
+      letter-spacing: 8px;
+      text-transform: uppercase;
+      opacity: 0.5;
+      font-weight: 300;
+      margin-bottom: 4px;
+    }
+
+    .auth-field {
+      width: 100%;
+      position: relative;
+    }
+
+    .auth-field input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1.2px solid rgba(255,255,255,0.12);
+      color: #fff;
+      font-family: inherit;
+      font-size: 13px;
+      padding: 10px 0;
+      outline: none;
+      text-align: center;
+      letter-spacing: 1px;
+      transition: border-color 0.2s;
+    }
+
+    .auth-field input:focus {
+      border-bottom-color: rgba(255,255,255,0.4);
+    }
+
+    .auth-field input::placeholder {
+      color: rgba(255,255,255,0.12);
+      letter-spacing: 1px;
+    }
+
+    .field-line {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 1px;
+      background: rgba(255,255,255,0.6);
+      transition: width 0.3s, left 0.3s;
+    }
+
+    .auth-field input:focus ~ .field-line {
+      width: 100%;
+      left: 0;
+    }
+
+    .auth-links {
+      font-size: 10px;
+      letter-spacing: 2px;
+      opacity: 0.4;
+    }
+
+    .err {
+      font-size: 10px;
+      color: rgba(255, 90, 90, 0.8);
+      letter-spacing: 1px;
+      text-align: center;
+      min-height: 20px;
+    }
+
+    .ok {
+      font-size: 10px;
+      color: rgba(100, 255, 140, 0.8);
+      text-align: center;
+    }
+
+    .btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.55);
+      font-family: inherit;
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      padding: 10px 26px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      border-radius: 40px;
+    }
+
+    .btn:hover {
+      border-color: rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.9);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .btn-sm {
+      padding: 6px 16px;
+      font-size: 9px;
+      letter-spacing: 2px;
+      border-radius: 30px;
+    }
+
+    .btn-primary {
+      border-color: rgba(100, 120, 255, 0.35);
+      color: rgba(100, 150, 255, 0.8);
+    }
+
+    .btn-primary:hover {
+      border-color: rgba(100, 150, 255, 0.7);
+      color: #adc6ff;
+    }
+
+    .btn-icon {
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.3);
+      cursor: pointer;
+      font-size: 12px;
+      padding: 4px 8px;
+      transition: 0.2s;
+    }
+
+    .btn-icon:hover {
+      color: rgba(255,255,255,0.8);
+    }
+
+    /* ----- MAIN APP (DARK LAYOUT) ----- */
+    #app {
+      display: none;
+      height: 100vh;
+      flex-direction: column;
+      background: #000000;
+    }
+
+    .topbar {
+      height: 48px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 20px;
+      flex-shrink: 0;
+      background: #010101;
+    }
+
+    .topbar-logo {
+      font-size: 12px;
+      letter-spacing: 7px;
+      text-transform: uppercase;
+      opacity: 0.4;
+      font-weight: 400;
+    }
+
+    .topbar-email {
+      font-size: 10px;
+      letter-spacing: 1px;
+      opacity: 0.4;
+      background: rgba(255,255,255,0.03);
+      padding: 4px 10px;
+      border-radius: 30px;
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #54e085;
+      box-shadow: 0 0 4px #54e085;
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+    .topbar-right {
+      margin-left: auto;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 210px;
+      border-right: 1px solid rgba(255,255,255,0.04);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 12px;
+      flex-shrink: 0;
+      background: #010101;
+    }
+
+    .compose-btn {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.7);
+      font-family: inherit;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+      border-radius: 40px;
+      width: 100%;
+      margin-bottom: 28px;
+    }
+
+    .compose-btn:hover {
+      border-color: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.03);
+      color: white;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      transition: 0.2s;
+      border-radius: 12px;
+      margin: 3px 0;
+    }
+
+    .nav-item:hover {
+      color: rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .nav-item.active {
+      color: white;
+      background: rgba(255,255,255,0.05);
+      border-left: 2px solid #8892ff;
+    }
+
+    .nav-count {
+      margin-left: auto;
+      font-size: 9px;
+      background: rgba(255,255,255,0.1);
+      padding: 2px 6px;
+      border-radius: 30px;
+    }
+
+    /* email list panel */
+    .email-list-pane {
+      width: 340px;
+      border-right: 1px solid rgba(255,255,255,0.04);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      background: #020202;
+    }
+
+    .pane-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .pane-title {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      opacity: 0.5;
+    }
+
+    .search-bar {
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .search-bar input {
+      width: 100%;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 40px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 11px;
+      padding: 8px 14px;
+      outline: none;
+    }
+
+    .email-list {
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .email-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      cursor: pointer;
+      transition: background 0.12s;
+      position: relative;
+    }
+
+    .email-item:hover {
+      background: rgba(255,255,255,0.02);
+    }
+
+    .email-item.active {
+      background: rgba(80, 110, 255, 0.08);
+    }
+
+    .email-item.unread .email-from {
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    .email-item.unread::before {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 18px;
+      width: 5px;
+      height: 5px;
+      background: #6c8cff;
+      border-radius: 50%;
+    }
+
+    .email-from {
+      font-size: 11px;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .email-subject {
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .email-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .email-time {
+      font-size: 9px;
+      color: rgba(255,255,255,0.2);
+    }
+
+    /* detail panel */
+    .detail-pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #000000;
+    }
+
+    .detail-empty {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.2;
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+
+    .detail-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .detail-subject {
+      font-size: 15px;
+      font-weight: 450;
+      margin-bottom: 10px;
+    }
+
+    .detail-meta-row {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      font-size: 10px;
+      color: rgba(255,255,255,0.35);
+    }
+
+    .detail-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+    }
+
+    .detail-body-text {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+
+    .reply-area {
+      border-top: 1px solid rgba(255,255,255,0.04);
+      padding: 16px 24px;
+      background: #010101;
+    }
+
+    .reply-area textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      color: #ddd;
+      font-family: inherit;
+      font-size: 12px;
+      padding: 12px;
+      resize: vertical;
+      outline: none;
+    }
+
+    /* modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+    }
+
+    .modal {
+      background: #0b0b0e;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 24px;
+      width: 540px;
+      max-width: 90vw;
+    }
+
+    .modal-header {
+      padding: 16px 22px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      letter-spacing: 3px;
+    }
+
+    .modal-field {
+      padding: 12px 22px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      display: flex;
+      gap: 12px;
+    }
+
+    .modal-field label {
+      width: 45px;
+      opacity: 0.5;
+      font-size: 10px;
+      letter-spacing: 1px;
+    }
+
+    .modal-field input, .modal-body textarea {
+      background: transparent;
+      border: none;
+      color: white;
+      font-family: inherit;
+      flex: 1;
+      outline: none;
+    }
+
+    .modal-body textarea {
+      width: 100%;
+      min-height: 160px;
+      padding: 8px 0;
+      resize: vertical;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: #111215;
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 10px 20px;
+      font-size: 10px;
+      letter-spacing: 2px;
+      border-radius: 40px;
+      transition: 0.2s;
+      z-index: 300;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loader {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-top-color: #8892ff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 200px;
+      gap: 10px;
+      opacity: 0.3;
+    }
+  </style>
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
-<div id="auth-screen" class="fade-in">
+<!-- AUTH LOGIN -->
+<div id="auth-screen">
   <div class="auth-box">
     <div class="auth-title">mail.wimp.best</div>
     <div class="auth-field">
-      <input type="text" id="login-email" placeholder="username@mail.wimp.best" autocomplete="email" autofocus>
+      <input type="text" id="login-email" placeholder="username or onion@mail.wimp.best" autofocus>
       <div class="field-line"></div>
     </div>
     <div class="auth-field">
-      <input type="password" id="login-password" placeholder="password" autocomplete="current-password">
+      <input type="password" id="login-password" placeholder="password">
       <div class="field-line"></div>
     </div>
     <div class="err" id="login-err"></div>
-    <button class="btn" id="login-btn" onclick="doLogin()">enter</button>
-    <div class="auth-links"><a href="#" onclick="showRegister()">need an account?</a></div>
+    <button class="btn" id="login-btn">➤ enter</button>
+    <div class="auth-links"><a href="#" id="show-register-link">need onion account?</a></div>
   </div>
 </div>
 
-<!-- REGISTER SCREEN (creates username@mail.wimp.best) -->
-<div id="register-screen" style="display:none; height:100vh; align-items:center; justify-content:center;">
+<!-- REGISTER -->
+<div id="register-screen" style="display:none;">
   <div class="auth-box">
-    <div class="auth-title">create account</div>
+    <div class="auth-title">create onion address</div>
     <div class="auth-field">
-      <input type="text" id="reg-username" placeholder="username" autocomplete="username">
+      <input type="text" id="reg-username" placeholder="username (alphanumeric)">
       <div class="field-line"></div>
     </div>
-    <div class="auth-field" style="background: rgba(255,255,255,0.02); border-radius:2px; padding:0 8px;">
-      <span style="font-size:11px; opacity:0.4;">@mail.wimp.best</span>
-    </div>
+    <div class="auth-field" style="text-align:center; font-size:11px; opacity:0.5;">@mail.wimp.best</div>
     <div class="auth-field">
-      <input type="password" id="reg-password" placeholder="password" autocomplete="new-password">
+      <input type="password" id="reg-password" placeholder="password">
       <div class="field-line"></div>
     </div>
     <div class="err" id="reg-err"></div>
     <div class="ok" id="reg-ok"></div>
-    <button class="btn" id="reg-btn" onclick="doRegister()">register</button>
-    <div class="auth-links"><a href="#" onclick="showLogin()">have an account?</a></div>
+    <button class="btn" id="reg-btn"> register </button>
+    <div class="auth-links"><a href="#" id="show-login-link">← back to login</a></div>
   </div>
 </div>
 
 <!-- MAIN APP -->
-<div id="app" style="display:none; flex-direction:column; height:100vh;">
+<div id="app">
   <div class="topbar">
     <div class="topbar-logo">mail.wimp.best</div>
     <span class="live-dot"></span>
     <div id="topbar-email" class="topbar-email"></div>
-    <div class="topbar-right"><button class="btn-icon" onclick="doLogout()">sign out</button></div>
+    <div class="topbar-right">
+      <button class="btn-icon" id="logout-btn">⤿ sign out</button>
+    </div>
   </div>
   <div class="main">
     <div class="sidebar">
-      <button class="compose-btn" onclick="openCompose()">+ compose</button>
-      <div class="nav-item active" id="nav-inbox" onclick="setFolder('inbox')"><span>inbox</span><span class="nav-count" id="unread-count"></span></div>
-      <div class="nav-item" id="nav-sent" onclick="setFolder('sent')"><span>sent</span></div>
-      <div class="nav-item" id="nav-trash" onclick="setFolder('trash')"><span>trash</span></div>
-      <div class="nav-item" id="nav-unread" onclick="setFolder('unread')">unread</div>
-      <div class="nav-item" id="nav-starred" onclick="setFolder('starred')">starred</div>
+      <button class="compose-btn" id="compose-global">✧ compose</button>
+      <div class="nav-item active" id="nav-inbox" data-folder="inbox">📬 inbox <span id="inbox-count" class="nav-count"></span></div>
+      <div class="nav-item" id="nav-sent" data-folder="sent">📤 sent</div>
+      <div class="nav-item" id="nav-trash" data-folder="trash">🗑 trash</div>
+      <div class="nav-item" id="nav-unread" data-folder="unread">✨ unread</div>
+      <div class="nav-item" id="nav-starred" data-folder="starred">⭐ starred</div>
     </div>
+
     <div class="email-list-pane">
-      <div class="pane-header"><div class="pane-title" id="pane-title">inbox</div><div class="pane-actions"><button class="btn-icon" onclick="refreshEmails()">↻</button><button class="btn-icon" onclick="markAllRead()">✓</button></div></div>
-      <div class="search-bar"><input type="text" id="search-input" placeholder="search..." oninput="filterEmails(this.value)"></div>
-      <div class="email-list" id="email-list"><div class="empty-state"><div class="loader"></div></div></div>
+      <div class="pane-header"><div class="pane-title" id="current-folder-label">inbox</div><button class="btn-icon" id="refresh-list">↻</button></div>
+      <div class="search-bar"><input type="text" id="search-input" placeholder="search messages..."></div>
+      <div class="email-list" id="email-list"><div class="empty-state"><div class="loader"></div>loading mailbox</div></div>
     </div>
+
     <div class="detail-pane" id="detail-pane">
-      <div class="detail-empty" id="detail-empty">select an email</div>
-      <div id="detail-view" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
+      <div class="detail-empty" id="detail-empty">◉ select a message</div>
+      <div id="detail-view" style="display:none; flex-direction:column; flex:1;">
         <div class="detail-header">
           <div class="detail-subject" id="detail-subject"></div>
-          <div class="detail-meta-row"><div class="detail-meta">from: <span id="detail-from"></span></div><div class="detail-meta">to: <span id="detail-to"></span></div><div class="detail-meta"><span id="detail-date"></span></div><div class="detail-actions"><button class="btn-icon" id="btn-star" onclick="toggleStar()">☆</button><button class="btn-icon btn-danger" onclick="moveToTrash()">trash</button></div></div>
+          <div class="detail-meta-row"><span>✉ from <span id="detail-from"></span></span><span>📅 <span id="detail-date"></span></span><span style="margin-left:auto;"><button id="star-detail-btn" class="btn-icon">☆</button><button id="trash-detail-btn" class="btn-icon">🗑</button></span></div>
         </div>
-        <div class="detail-body" id="detail-body"></div>
-        <div class="reply-area"><textarea id="reply-text" placeholder="reply..."></textarea><div class="reply-actions"><button class="btn-sm btn-primary" onclick="sendReply()">send reply</button><button class="btn-sm" onclick="closeDetail()">close</button></div></div>
+        <div class="detail-body" id="detail-body"><div class="detail-body-text"></div></div>
+        <div class="reply-area">
+          <textarea id="reply-textarea" rows="2" placeholder="write a reply..."></textarea>
+          <div style="display:flex; gap:8px; margin-top:8px;"><button class="btn-sm btn-primary" id="send-reply-btn">↩ send reply</button><button class="btn-sm" id="close-detail-btn">close</button></div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<div id="compose-modal" class="modal-overlay" style="display:none;"><div class="modal"><div class="modal-header"><span>new message</span><button class="btn-icon" onclick="closeCompose()">✕</button></div><div class="modal-field"><label>to</label><input type="email" id="compose-to" placeholder="user@domain.com"></div><div class="modal-field"><label>subj</label><input type="text" id="compose-subject" placeholder="subject"></div><div class="modal-body"><textarea id="compose-body" placeholder="write your message..."></textarea></div><div class="modal-footer"><button class="btn-sm btn-primary" onclick="sendCompose()">send</button><button class="btn-sm" onclick="closeCompose()">cancel</button><span id="compose-status" style="font-size:10px; opacity:0.4; margin-left:auto;"></span></div></div></div>
-<div class="toast" id="toast"></div>
+<!-- COMPOSE MODAL -->
+<div id="compose-modal" class="modal-overlay" style="display:none;">
+  <div class="modal">
+    <div class="modal-header"><span>✎ new message</span><button class="btn-icon" id="close-modal-btn">✕</button></div>
+    <div class="modal-field"><label>to</label><input type="email" id="compose-to" placeholder="recipient@domain.com"></div>
+    <div class="modal-field"><label>subj</label><input type="text" id="compose-subject" placeholder="subject"></div>
+    <div class="modal-body"><textarea id="compose-body" placeholder="write your secure message..."></textarea></div>
+    <div style="padding:12px 22px 20px; display:flex; gap:12px; justify-content:flex-end;"><button class="btn-sm btn-primary" id="send-compose-btn">send</button><button class="btn-sm" id="cancel-compose-btn">cancel</button><span id="compose-status" style="font-size:9px; margin-left:12px; opacity:0.5;"></span></div>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
 
 <script>
-// ─────────────────────────────────────────────────────────────
-// CONFIGURATION
-const SUPABASE_URL = 'https://dyxxpuirsuqtuehvijdf.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_8IaNO6bOuQHZdVyAPeP1Qg_sjjcGcVy';
-const MAILGUN_KEY  = '445d9949d4e2b6d36db7eea3c3a73421';
-const CUSTOM_DOMAIN = 'mail.wimp.best';
+  // CONFIGURATION
+  const SUPABASE_URL = 'https://dyxxpuirsuqtuehvijdf.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_8IaNO6bOuQHZdVyAPeP1Qg_sjjcGcVy';
+  const MAILGUN_KEY  = '445d9949d4e2b6d36db7eea3c3a73421';
+  const MAILGUN_DOMAIN = 'wimp.best';
 
-let currentSession = null;
-let currentUser = null;
-let emails = [];
-let currentEmail = null;
-let currentFolder = 'inbox';
-let refreshInterval = null;
+  let currentSession = null;
+  let currentUser = null;
+  let emails = [];
+  let currentEmailObj = null;
+  let currentFolder = 'inbox';
+  let refreshInterval = null;
 
-// Helper: get user's full email (username@mail.wimp.best)
-function getUserEmailFromMetadata(user) {
-  if (!user) return '';
-  const meta = user.user_metadata || {};
-  const username = meta.username || user.email?.split('@')[0] || '';
-  return `${username}@${CUSTOM_DOMAIN}`;
-}
-
-// ─────────────────────────────────────────────────────────────
-// Supabase REST (with auth)
-async function sbRequest(path, opts = {}) {
-  const headers = {
-    'apikey': SUPABASE_KEY,
-    'Content-Type': 'application/json',
-    ...(opts.headers || {})
-  };
-  if (currentSession?.access_token) {
-    headers['Authorization'] = `Bearer ${currentSession.access_token}`;
+  // Helper: get user email (username@wimp.best)
+  function getUserEmailFromMeta() {
+    if (!currentUser) return '';
+    const username = currentUser.user_metadata?.username || (currentUser.email ? currentUser.email.split('@')[0] : 'user');
+    return `${username}@${MAILGUN_DOMAIN}`;
   }
-  const res = await fetch(`${SUPABASE_URL}${path}`, { ...opts, headers });
-  if (!res.ok && res.status !== 200 && res.status !== 204) {
-    const errText = await res.text().catch(() => '');
-    throw new Error(errText || res.statusText);
+
+  // Supabase REST wrapper
+  async function sbReq(path, opts = {}) {
+    const headers = { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' };
+    if (currentSession?.access_token) headers['Authorization'] = `Bearer ${currentSession.access_token}`;
+    const res = await fetch(`${SUPABASE_URL}${path}`, { ...opts, headers });
+    if (!res.ok && res.status !== 200 && res.status !== 204) throw new Error(await res.text());
+    if (res.status === 204) return {};
+    return res.json();
   }
-  if (res.status === 204) return {};
-  return res.json().catch(() => ({}));
-}
 
-async function sbAuth(path, body) {
-  const res = await fetch(`${SUPABASE_URL}/auth/v1${path}`, {
-    method: 'POST',
-    headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  return res.json();
-}
-
-// ─────────────────────────────────────────────────────────────
-// AUTH: LOGIN with email = username@mail.wimp.best format
-async function doLogin() {
-  const rawInput = document.getElementById('login-email').value.trim();
-  const password = document.getElementById('login-password').value;
-  const errEl = document.getElementById('login-err');
-  errEl.textContent = '';
-  if (!rawInput || !password) { errEl.textContent = 'both fields required'; return; }
-  
-  let email = rawInput;
-  if (!email.includes('@')) email = `${rawInput}@${CUSTOM_DOMAIN}`;
-  
-  const btn = document.getElementById('login-btn');
-  btn.disabled = true; btn.textContent = '...';
-  try {
-    const data = await sbAuth('/token?grant_type=password', { email, password });
-    if (data.error) { errEl.textContent = data.error_description || data.error; return; }
-    currentSession = data;
-    currentUser = data.user;
-    bootApp();
-  } catch(e) { errEl.textContent = 'login failed'; }
-  finally { btn.disabled = false; btn.textContent = 'enter'; }
-}
-
-// REGISTER: username => email = username@mail.wimp.best
-async function doRegister() {
-  const username = document.getElementById('reg-username').value.trim();
-  const password = document.getElementById('reg-password').value;
-  const errEl = document.getElementById('reg-err');
-  const okEl = document.getElementById('reg-ok');
-  errEl.textContent = ''; okEl.textContent = '';
-  if (!username || !password) { errEl.textContent = 'username and password required'; return; }
-  if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{1,30}$/.test(username)) {
-    errEl.textContent = 'invalid username (letters, numbers, dot/dash)';
-    return;
+  async function sbAuth(path, body) {
+    const r = await fetch(`${SUPABASE_URL}/auth/v1${path}`, { method: 'POST', headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    return r.json();
   }
-  const email = `${username}@${CUSTOM_DOMAIN}`;
-  const btn = document.getElementById('reg-btn');
-  btn.disabled = true; btn.textContent = '...';
-  try {
-    const data = await sbAuth('/signup', {
-      email, password,
-      data: { username, display_name: username, custom_email: email }
-    });
-    if (data.error) { errEl.textContent = data.error_description || data.error; return; }
-    okEl.textContent = 'account created! verify email (check spam) then sign in.';
-    setTimeout(() => showLogin(), 2800);
-  } catch(e) { errEl.textContent = 'registration error'; }
-  finally { btn.disabled = false; btn.textContent = 'register'; }
-}
 
-function showRegister() {
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('register-screen').style.display = 'flex';
-}
-function showLogin() {
-  document.getElementById('register-screen').style.display = 'none';
-  document.getElementById('auth-screen').style.display = 'flex';
-}
-function doLogout() {
-  clearInterval(refreshInterval);
-  currentSession = null; currentUser = null;
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('auth-screen').style.display = 'flex';
-  document.getElementById('login-password').value = '';
-}
-
-// ─────────────────────────────────────────────────────────────
-// APP BOOT
-function bootApp() {
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('register-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-  
-  const userEmail = getUserEmailFromMetadata(currentUser);
-  document.getElementById('topbar-email').textContent = userEmail;
-  loadEmails();
-  refreshInterval = setInterval(loadEmails, 15000);
-}
-
-// ─────────────────────────────────────────────────────────────
-// EMAILS CRUD
-async function loadEmails() {
-  try {
-    let query = `/rest/v1/emails?select=*&order=received_at.desc.nullslast,created_at.desc`;
-    if (currentFolder === 'inbox') query += `&folder=eq.inbox&is_deleted=eq.false`;
-    else if (currentFolder === 'sent') query += `&folder=eq.sent&is_deleted=eq.false`;
-    else if (currentFolder === 'trash') query += `&is_deleted=eq.true`;
-    else if (currentFolder === 'unread') query += `&is_read=eq.false&is_deleted=eq.false`;
-    else if (currentFolder === 'starred') query += `&is_starred=eq.true&is_deleted=eq.false`;
-    const data = await sbRequest(query);
-    emails = Array.isArray(data) ? data : [];
-    renderEmailList(emails);
-    updateUnreadCount();
-  } catch(e) { emails = []; renderEmailList([]); }
-}
-
-function renderEmailList(list) {
-  const container = document.getElementById('email-list');
-  if (!list.length) { container.innerHTML = `<div class="empty-state"><p>no mail</p></div>`; return; }
-  container.innerHTML = list.map(e => {
-    const from = e.from_address || e.from_name || 'unknown';
-    const subject = e.subject || '(no subject)';
-    const preview = stripHtml(e.body_text || e.body_html || '');
-    const date = formatDate(e.received_at || e.created_at);
-    const isUnread = !e.is_read;
-    const active = currentEmail?.id === e.id;
-    return `<div class="email-item ${isUnread ? 'unread' : ''} ${active ? 'active' : ''}" onclick="openEmail('${e.id}')" data-id="${e.id}">
-      <div class="email-meta" style="display:flex; justify-content:space-between;"><div class="email-from">${esc(truncate(from,28))}</div><div class="email-time">${date}</div></div>
-      <div class="email-subject">${esc(truncate(subject, 38))}</div>
-      <div class="email-preview">${esc(truncate(preview, 52))}</div>
-    </div>`;
-  }).join('');
-}
-function filterEmails(q) {
-  q = q.toLowerCase();
-  const filtered = emails.filter(e => (e.from_address||'').toLowerCase().includes(q) || (e.subject||'').toLowerCase().includes(q) || (e.body_text||'').toLowerCase().includes(q));
-  renderEmailList(filtered);
-}
-async function openEmail(id) {
-  const email = emails.find(e => e.id === id);
-  if (!email) return;
-  currentEmail = email;
-  document.querySelectorAll('.email-item').forEach(el => el.classList.remove('active'));
-  document.querySelector(`[data-id="${id}"]`)?.classList.add('active');
-  document.getElementById('detail-empty').style.display = 'none';
-  const dv = document.getElementById('detail-view');
-  dv.style.display = 'flex';
-  document.getElementById('detail-subject').textContent = email.subject || '(no subject)';
-  document.getElementById('detail-from').textContent = email.from_address || 'unknown';
-  document.getElementById('detail-to').textContent = email.to_address || getUserEmailFromMetadata(currentUser);
-  document.getElementById('detail-date').textContent = formatDateTime(email.received_at || email.created_at);
-  const btnStar = document.getElementById('btn-star');
-  btnStar.textContent = email.is_starred ? '★' : '☆';
-  btnStar.style.color = email.is_starred ? 'rgba(255,200,50,0.8)' : '';
-  const bodyDiv = document.getElementById('detail-body');
-  if (email.body_html) bodyDiv.innerHTML = `<div class="detail-body-text">${sanitizeHtml(email.body_html)}</div>`;
-  else bodyDiv.innerHTML = `<div class="detail-body-text">${esc(email.body_text || '(empty)')}</div>`;
-  document.getElementById('reply-text').placeholder = `reply to ${email.from_address || ''}`;
-  if (!email.is_read) {
-    email.is_read = true;
+  // AUTH LOGIC
+  async function doLogin() {
+    let raw = document.getElementById('login-email').value.trim();
+    const pass = document.getElementById('login-password').value;
+    const errDiv = document.getElementById('login-err');
+    if (!raw || !pass) { errDiv.innerText = 'fill both fields'; return; }
+    let email = raw.includes('@') ? raw : `${raw}@${MAILGUN_DOMAIN}`;
+    const btn = document.getElementById('login-btn');
+    btn.disabled = true; btn.innerText = '...';
     try {
-      await sbRequest(`/rest/v1/emails?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ is_read: true }) });
-      document.querySelector(`[data-id="${id}"]`)?.classList.remove('unread');
-      updateUnreadCount();
-    } catch(e) {}
+      const data = await sbAuth('/token?grant_type=password', { email, password: pass });
+      if (data.error) { errDiv.innerText = data.error_description || 'auth failed'; return; }
+      currentSession = data;
+      currentUser = data.user;
+      startApp();
+    } catch(e) { errDiv.innerText = 'connection error'; }
+    finally { btn.disabled = false; btn.innerText = '➤ enter'; }
   }
-}
-function closeDetail() { currentEmail = null; document.getElementById('detail-view').style.display = 'none'; document.getElementById('detail-empty').style.display = 'flex'; }
-async function toggleStar() {
-  if (!currentEmail) return;
-  currentEmail.is_starred = !currentEmail.is_starred;
-  const btn = document.getElementById('btn-star');
-  btn.textContent = currentEmail.is_starred ? '★' : '☆';
-  btn.style.color = currentEmail.is_starred ? 'rgba(255,200,50,0.8)' : '';
-  await sbRequest(`/rest/v1/emails?id=eq.${currentEmail.id}`, { method: 'PATCH', body: JSON.stringify({ is_starred: currentEmail.is_starred }) });
-}
-async function moveToTrash() {
-  if (!currentEmail) return;
-  await sbRequest(`/rest/v1/emails?id=eq.${currentEmail.id}`, { method: 'PATCH', body: JSON.stringify({ is_deleted: true }) });
-  toast('moved to trash'); closeDetail(); loadEmails();
-}
-async function markAllRead() {
-  await sbRequest(`/rest/v1/emails?is_read=eq.false&is_deleted=eq.false`, { method: 'PATCH', body: JSON.stringify({ is_read: true }) });
-  emails.forEach(e => e.is_read = true); renderEmailList(emails); updateUnreadCount();
-}
-function setFolder(folder) { currentFolder = folder; closeDetail(); document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active')); document.getElementById(`nav-${folder}`)?.classList.add('active'); document.getElementById('pane-title').textContent = folder; document.getElementById('search-input').value=''; loadEmails(); }
-function updateUnreadCount() { const cnt = emails.filter(e=>!e.is_read && !e.is_deleted).length; document.getElementById('unread-count').textContent = cnt>0?cnt:''; }
-function refreshEmails() { document.getElementById('email-list').innerHTML = `<div class="empty-state"><div class="loader"></div></div>`; loadEmails(); }
 
-// Compose / Send
-function openCompose() { document.getElementById('compose-modal').style.display = 'flex'; document.getElementById('compose-to').value = ''; document.getElementById('compose-subject').value = ''; document.getElementById('compose-body').value = ''; document.getElementById('compose-status').textContent = ''; }
-function closeCompose() { document.getElementById('compose-modal').style.display = 'none'; }
-async function sendCompose() {
-  const to = document.getElementById('compose-to').value.trim();
-  const subject = document.getElementById('compose-subject').value.trim() || '(no subject)';
-  const body = document.getElementById('compose-body').value.trim();
-  const statusSpan = document.getElementById('compose-status');
-  if (!to || !body) { statusSpan.textContent = 'recipient & body required'; return; }
-  const fromEmail = getUserEmailFromMetadata(currentUser);
-  statusSpan.textContent = 'sending...';
-  try {
-    const formData = new FormData();
-    formData.append('from', fromEmail);
-    formData.append('to', to);
-    formData.append('subject', subject);
-    formData.append('text', body);
-    await fetch(`https://api.mailgun.net/v3/${CUSTOM_DOMAIN}/messages`, {
-      method: 'POST', headers: { 'Authorization': 'Basic ' + btoa('api:' + MAILGUN_KEY) }, body: formData
-    });
-    await sbRequest('/rest/v1/emails', {
-      method: 'POST', body: JSON.stringify({
-        user_id: currentUser?.id, from_address: fromEmail, to_address: to, subject, body_text: body,
-        folder: 'sent', is_read: true, is_deleted: false, is_starred: false, received_at: new Date().toISOString()
-      })
-    });
-    statusSpan.textContent = 'sent!'; toast('message sent'); setTimeout(closeCompose, 1200);
+  async function doRegister() {
+    const username = document.getElementById('reg-username').value.trim();
+    const pass = document.getElementById('reg-password').value;
+    const errDiv = document.getElementById('reg-err');
+    const okDiv = document.getElementById('reg-ok');
+    errDiv.innerText = ''; okDiv.innerText = '';
+    if (!username || !pass) { errDiv.innerText = 'username & password required'; return; }
+    if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{2,30}$/.test(username)) { errDiv.innerText = 'username 3-30 chars (letters, numbers, . - _)'; return; }
+    const email = `${username}@${MAILGUN_DOMAIN}`;
+    const btn = document.getElementById('reg-btn');
+    btn.disabled = true; btn.innerText = '...';
+    try {
+      const data = await sbAuth('/signup', { email, password: pass, data: { username, display_name: username, onion_email: email } });
+      if (data.error) { errDiv.innerText = data.error_description || 'signup error'; return; }
+      okDiv.innerText = '✅ verification email sent! confirm then login.';
+      setTimeout(() => { document.getElementById('register-screen').style.display = 'none'; document.getElementById('auth-screen').style.display = 'flex'; }, 2800);
+    } catch(e) { errDiv.innerText = 'signup failed'; }
+    finally { btn.disabled = false; btn.innerText = 'register'; }
+  }
+
+  function logout() { if (refreshInterval) clearInterval(refreshInterval); currentSession = null; currentUser = null; document.getElementById('app').style.display = 'none'; document.getElementById('auth-screen').style.display = 'flex'; document.getElementById('login-password').value = ''; }
+
+  // core email loading
+  async function loadEmails() {
+    if (!currentSession) return;
+    try {
+      let query = `/rest/v1/emails?select=*&order=received_at.desc.nullslast,created_at.desc`;
+      if (currentFolder === 'inbox') query += `&folder=eq.inbox&is_deleted=eq.false`;
+      else if (currentFolder === 'sent') query += `&folder=eq.sent&is_deleted=eq.false`;
+      else if (currentFolder === 'trash') query += `&is_deleted=eq.true`;
+      else if (currentFolder === 'unread') query += `&is_read=eq.false&is_deleted=eq.false`;
+      else if (currentFolder === 'starred') query += `&is_starred=eq.true&is_deleted=eq.false`;
+      const data = await sbReq(query);
+      emails = Array.isArray(data) ? data : [];
+      renderEmailList();
+      updateUnreadBadge();
+    } catch(e) { emails = []; renderEmailList(); }
+  }
+
+  function renderEmailList() {
+    const container = document.getElementById('email-list');
+    const search = document.getElementById('search-input').value.toLowerCase();
+    let filtered = emails.filter(e => (e.subject || '').toLowerCase().includes(search) || (e.from_address || '').toLowerCase().includes(search));
+    if (!filtered.length) { container.innerHTML = `<div class="empty-state"><p>📭 no messages</p></div>`; return; }
+    container.innerHTML = filtered.map(e => {
+      const unreadClass = (!e.is_read && currentFolder !== 'sent') ? 'unread' : '';
+      const activeClass = (currentEmailObj && currentEmailObj.id === e.id) ? 'active' : '';
+      return `<div class="email-item ${unreadClass} ${activeClass}" data-id="${e.id}">
+        <div class="email-meta"><div class="email-from">${escapeHtml(e.from_address || 'anon')}</div><div class="email-time">${formatTime(e.received_at || e.created_at)}</div></div>
+        <div class="email-subject">${escapeHtml(e.subject || '(no subject)')}</div>
+      </div>`;
+    }).join('');
+    document.querySelectorAll('.email-item').forEach(el => el.addEventListener('click', () => openEmailById(el.getAttribute('data-id'))));
+  }
+
+  async function openEmailById(id) {
+    const email = emails.find(e => e.id === id);
+    if (!email) return;
+    currentEmailObj = email;
+    if (!email.is_read && currentFolder !== 'sent') {
+      await sbReq(`/rest/v1/emails?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ is_read: true }) });
+      email.is_read = true;
+      renderEmailList();
+      updateUnreadBadge();
+    }
+    document.getElementById('detail-empty').style.display = 'none';
+    const dv = document.getElementById('detail-view');
+    dv.style.display = 'flex';
+    document.getElementById('detail-subject').innerText = email.subject || '(no subject)';
+    document.getElementById('detail-from').innerText = email.from_address || 'unknown';
+    document.getElementById('detail-date').innerText = new Date(email.received_at || email.created_at).toLocaleString();
+    document.getElementById('detail-body').innerHTML = `<div class="detail-body-text">${escapeHtml(email.body_text || (email.body_html ? stripHtml(email.body_html) : '✨ empty message'))}</div>`;
+    const starBtn = document.getElementById('star-detail-btn');
+    starBtn.innerText = email.is_starred ? '★' : '☆';
+    starBtn.onclick = async () => { const newStar = !email.is_starred; await sbReq(`/rest/v1/emails?id=eq.${email.id}`, { method: 'PATCH', body: JSON.stringify({ is_starred: newStar }) }); email.is_starred = newStar; starBtn.innerText = newStar ? '★' : '☆'; renderEmailList(); };
+    document.getElementById('trash-detail-btn').onclick = async () => { await sbReq(`/rest/v1/emails?id=eq.${email.id}`, { method: 'PATCH', body: JSON.stringify({ is_deleted: true }) }); toastMsg('moved to trash'); closeDetail(); loadEmails(); };
+    document.getElementById('send-reply-btn').onclick = async () => { const reply = document.getElementById('reply-textarea').value.trim(); if (!reply) return; await sendMail(email.from_address, `Re: ${email.subject || ''}`, reply); toastMsg('reply sent'); document.getElementById('reply-textarea').value = ''; };
+  }
+
+  async function sendMail(to, subject, bodyText) {
+    const fromEmail = getUserEmailFromMeta();
+    const form = new FormData(); form.append('from', fromEmail); form.append('to', to); form.append('subject', subject); form.append('text', bodyText);
+    await fetch(`https://api.mailgun.net/v3/${MAILGUN_DOMAIN}/messages`, { method: 'POST', headers: { 'Authorization': 'Basic ' + btoa('api:' + MAILGUN_KEY) }, body: form });
+    await sbReq('/rest/v1/emails', { method: 'POST', body: JSON.stringify({ user_id: currentUser.id, from_address: fromEmail, to_address: to, subject, body_text: bodyText, folder: 'sent', is_read: true, received_at: new Date().toISOString() }) });
     if (currentFolder === 'sent') loadEmails();
-  } catch(e) { statusSpan.textContent = 'failed'; toast('send error', true); }
-}
-async function sendReply() {
-  if (!currentEmail) return;
-  const replyBody = document.getElementById('reply-text').value.trim();
-  if (!replyBody) return;
-  const fromEmail = getUserEmailFromMetadata(currentUser);
-  const to = currentEmail.from_address;
-  try {
-    const formData = new FormData();
-    formData.append('from', fromEmail); formData.append('to', to); formData.append('subject', 'Re: ' + (currentEmail.subject || '')); formData.append('text', replyBody);
-    await fetch(`https://api.mailgun.net/v3/${CUSTOM_DOMAIN}/messages`, { method: 'POST', headers: { 'Authorization': 'Basic ' + btoa('api:' + MAILGUN_KEY) }, body: formData });
-    await sbRequest('/rest/v1/emails', { method: 'POST', body: JSON.stringify({ user_id: currentUser?.id, from_address: fromEmail, to_address: to, subject: 'Re: ' + (currentEmail.subject || ''), body_text: replyBody, folder: 'sent', is_read: true }) });
-    document.getElementById('reply-text').value = ''; toast('reply sent');
-  } catch(e) { toast('reply failed', true); }
-}
-// utils
-function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function truncate(s,n) { s=String(s||''); return s.length>n?s.slice(0,n)+'…':s; }
-function stripHtml(h) { let d=document.createElement('div'); d.innerHTML=h; return d.textContent||d.innerText||''; }
-function sanitizeHtml(html) { return html.replace(/<script[\s\S]*?<\/script>/gi,'').replace(/on\w+="[^"]*"/gi,''); }
-function formatDate(ts) { if(!ts) return ''; let d=new Date(ts), now=new Date(); if(d.toDateString()===now.toDateString()) return d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); if((now-d)<7*86400000) return d.toLocaleDateString([],{weekday:'short'}); return d.toLocaleDateString([],{month:'short',day:'numeric'}); }
-function formatDateTime(ts) { if(!ts) return ''; return new Date(ts).toLocaleString([],{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}); }
-function toast(msg, isErr=false) { let el=document.getElementById('toast'); el.textContent=msg; el.className=`toast show ${isErr?'err':'ok'}`; setTimeout(()=>el.classList.remove('show'),3000); }
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') { if(document.getElementById('compose-modal').style.display!=='none') closeCompose(); else closeDetail(); } if((e.ctrlKey||e.metaKey)&&e.key==='n'){ e.preventDefault(); openCompose(); } });
+  }
+
+  async function sendCompose() { const to = document.getElementById('compose-to').value.trim(); const subj = document.getElementById('compose-subject').value.trim() || '(no subject)'; const body = document.getElementById('compose-body').value.trim(); if (!to || !body) { document.getElementById('compose-status').innerText = 'to & body required'; return; } document.getElementById('compose-status').innerText = 'sending...'; try { await sendMail(to, subj, body); document.getElementById('compose-status').innerText = '✓ sent'; toastMsg('message sent'); setTimeout(() => closeComposeModal(), 1300); } catch(e) { document.getElementById('compose-status').innerText = 'failed'; toastMsg('send error', true); } }
+
+  function closeDetail() { currentEmailObj = null; document.getElementById('detail-view').style.display = 'none'; document.getElementById('detail-empty').style.display = 'flex'; }
+  function setFolder(folder) { currentFolder = folder; closeDetail(); document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active')); document.getElementById(`nav-${folder}`).classList.add('active'); document.getElementById('current-folder-label').innerText = folder; loadEmails(); }
+  function updateUnreadBadge() { const cnt = emails.filter(e => !e.is_read && !e.is_deleted).length; document.getElementById('inbox-count').innerText = cnt || ''; }
+  function toastMsg(msg, isErr=false) { const t = document.getElementById('toast'); t.innerText = msg; t.style.opacity = '1'; t.style.backgroundColor = isErr ? '#2a1a1a' : '#1a2a1e'; setTimeout(() => t.style.opacity = '0', 2700); }
+  function escapeHtml(s) { return String(s || '').replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+  function stripHtml(html) { const div = document.createElement('div'); div.innerHTML = html; return div.textContent || div.innerText || ''; }
+  function formatTime(ts) { if (!ts) return ''; const d = new Date(ts); const now = new Date(); if (d.toDateString() === now.toDateString()) return d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); if ((now-d) < 7*86400000) return d.toLocaleDateString([], {weekday:'short'}); return d.toLocaleDateString([], {month:'short', day:'numeric'}); }
+  function openComposeModal() { document.getElementById('compose-modal').style.display = 'flex'; document.getElementById('compose-to').value = ''; document.getElementById('compose-subject').value = ''; document.getElementById('compose-body').value = ''; document.getElementById('compose-status').innerText = ''; }
+  function closeComposeModal() { document.getElementById('compose-modal').style.display = 'none'; }
+  function startApp() { document.getElementById('auth-screen').style.display = 'none'; document.getElementById('register-screen').style.display = 'none'; document.getElementById('app').style.display = 'flex'; document.getElementById('topbar-email').innerText = getUserEmailFromMeta(); loadEmails(); if (refreshInterval) clearInterval(refreshInterval); refreshInterval = setInterval(loadEmails, 13000); }
+
+  // EVENT LISTENERS
+  document.getElementById('login-btn').addEventListener('click', doLogin);
+  document.getElementById('show-register-link').addEventListener('click', () => { document.getElementById('auth-screen').style.display = 'none'; document.getElementById('register-screen').style.display = 'flex'; });
+  document.getElementById('show-login-link').addEventListener('click', () => { document.getElementById('register-screen').style.display = 'none'; document.getElementById('auth-screen').style.display = 'flex'; });
+  document.getElementById('reg-btn').addEventListener('click', doRegister);
+  document.getElementById('logout-btn').addEventListener('click', logout);
+  document.getElementById('compose-global').addEventListener('click', openComposeModal);
+  document.getElementById('send-compose-btn').addEventListener('click', sendCompose);
+  document.getElementById('close-modal-btn').addEventListener('click', closeComposeModal);
+  document.getElementById('cancel-compose-btn').addEventListener('click', closeComposeModal);
+  document.getElementById('close-detail-btn').addEventListener('click', closeDetail);
+  document.getElementById('refresh-list').addEventListener('click', () => loadEmails());
+  document.getElementById('search-input').addEventListener('input', () => renderEmailList());
+  document.querySelectorAll('[data-folder]').forEach(el => el.addEventListener('click', () => setFolder(el.getAttribute('data-folder'))));
+  window.addEventListener('keydown', e => { if (e.key === 'Escape') { if (document.getElementById('compose-modal').style.display !== 'none') closeComposeModal(); else closeDetail(); } if ((e.ctrlKey || e.metaKey) && e.key === 'n') { e.preventDefault(); openComposeModal(); } });
 </script>
 </body>
 </html>
