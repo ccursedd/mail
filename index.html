@@ -14,17 +14,13 @@ body {
   -webkit-font-smoothing: antialiased;
   font-size: 12px;
 }
-
-/* scrollbar */
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
-
 a { color: rgba(255,255,255,0.4); text-decoration: none; }
 a:hover { color: rgba(255,255,255,0.8); }
 
-/* ── AUTH ── */
-#auth-screen {
+.auth-screen {
   height: 100vh;
   display: flex;
   align-items: center;
@@ -35,7 +31,7 @@ a:hover { color: rgba(255,255,255,0.8); }
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  width: 280px;
+  width: 300px;
 }
 .auth-title {
   font-size: 11px;
@@ -44,6 +40,45 @@ a:hover { color: rgba(255,255,255,0.8); }
   opacity: 0.2;
   margin-bottom: 8px;
 }
+.username-wrap {
+  display: flex;
+  align-items: baseline;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  transition: border-color 0.25s;
+  width: 100%;
+  position: relative;
+}
+.username-wrap:focus-within { border-color: rgba(255,255,255,0.3); }
+.username-wrap input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 0;
+  outline: none;
+  text-align: right;
+  letter-spacing: 2px;
+  min-width: 0;
+}
+.username-wrap input::placeholder { color: rgba(255,255,255,0.12); }
+.username-suffix {
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.22);
+  white-space: nowrap;
+  padding: 8px 0 8px 1px;
+  flex-shrink: 0;
+}
+.uline {
+  position: absolute;
+  bottom: -1px; left: 50%;
+  width: 0; height: 1px;
+  background: rgba(255,255,255,0.5);
+  transition: width 0.3s, left 0.3s;
+}
+.username-wrap:focus-within .uline { width: 100%; left: 0; }
 .auth-field { width: 100%; position: relative; }
 .auth-field input {
   width: 100%;
@@ -61,21 +96,21 @@ a:hover { color: rgba(255,255,255,0.8); }
 }
 .auth-field input:focus { border-color: rgba(255,255,255,0.3); }
 .auth-field input::placeholder { color: rgba(255,255,255,0.12); }
-.field-line {
+.fline {
   position: absolute;
   bottom: 0; left: 50%;
   width: 0; height: 1px;
   background: rgba(255,255,255,0.5);
   transition: width 0.3s, left 0.3s;
 }
-.auth-field input:focus ~ .field-line { width: 100%; left: 0; }
+.auth-field input:focus ~ .fline { width: 100%; left: 0; }
+.auth-hint { font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,0.15); text-align: center; margin-top: -8px; }
 .auth-links { font-size: 10px; letter-spacing: 2px; opacity: 0.2; }
 .auth-links a { color: #fff; }
 .auth-links a:hover { opacity: 0.8; }
 .err { font-size: 10px; color: rgba(255,80,80,0.7); letter-spacing: 1px; min-height: 14px; text-align: center; }
 .ok  { font-size: 10px; color: rgba(80,255,120,0.7); letter-spacing: 1px; min-height: 14px; text-align: center; }
 
-/* ── BUTTONS ── */
 .btn {
   background: transparent;
   border: 1px solid rgba(255,255,255,0.08);
@@ -91,165 +126,104 @@ a:hover { color: rgba(255,255,255,0.8); }
 }
 .btn:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.8); }
 .btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.3; cursor: not-allowed; }
 .btn-sm { padding: 6px 14px; font-size: 9px; letter-spacing: 2px; }
 .btn-danger { border-color: rgba(255,80,80,0.15); color: rgba(255,80,80,0.4); }
 .btn-danger:hover { border-color: rgba(255,80,80,0.4); color: rgba(255,80,80,0.8); }
 .btn-primary { border-color: rgba(88,101,242,0.3); color: rgba(88,101,242,0.7); }
 .btn-primary:hover { border-color: rgba(88,101,242,0.5); color: rgba(88,101,242,1); }
 .btn-icon {
-  background: transparent;
-  border: none;
-  color: rgba(255,255,255,0.3);
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 11px;
-  padding: 4px 8px;
-  border-radius: 2px;
-  transition: color 0.2s;
+  background: transparent; border: none;
+  color: rgba(255,255,255,0.3); cursor: pointer;
+  font-family: inherit; font-size: 11px;
+  padding: 4px 8px; border-radius: 2px; transition: color 0.2s;
 }
 .btn-icon:hover { color: rgba(255,255,255,0.8); }
 
-/* ── APP SHELL ── */
 #app { display: none; height: 100vh; flex-direction: column; }
 .topbar {
   height: 44px;
   border-bottom: 1px solid rgba(255,255,255,0.05);
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-  gap: 20px;
-  flex-shrink: 0;
+  display: flex; align-items: center;
+  padding: 0 20px; gap: 16px; flex-shrink: 0;
 }
 .topbar-logo { font-size: 11px; letter-spacing: 6px; text-transform: uppercase; opacity: 0.2; }
-.topbar-email { font-size: 10px; letter-spacing: 1px; opacity: 0.3; }
+.topbar-addr { font-size: 10px; letter-spacing: 1px; color: rgba(255,255,255,0.35); }
 .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
-.topbar-user { font-size: 10px; letter-spacing: 1px; opacity: 0.3; }
+.live-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(80,200,100,0.6); flex-shrink: 0;
+  animation: pulse 2s ease-in-out infinite;
+  display: inline-block;
+}
+@keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
 
 .main { display: flex; flex: 1; overflow: hidden; }
 
-/* ── SIDEBAR ── */
 .sidebar {
-  width: 200px;
-  border-right: 1px solid rgba(255,255,255,0.05);
-  display: flex;
-  flex-direction: column;
-  padding: 16px 0;
-  flex-shrink: 0;
+  width: 200px; border-right: 1px solid rgba(255,255,255,0.05);
+  display: flex; flex-direction: column;
+  padding: 16px 0; flex-shrink: 0;
 }
 .compose-btn {
   margin: 0 12px 16px;
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.08);
-  color: rgba(255,255,255,0.5);
-  font-family: inherit;
-  font-size: 10px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  padding: 10px;
-  cursor: pointer;
-  transition: all 0.25s;
-  border-radius: 2px;
-  text-align: center;
+  background: transparent; border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.5); font-family: inherit;
+  font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+  padding: 10px; cursor: pointer; transition: all 0.25s;
+  border-radius: 2px; text-align: center;
 }
 .compose-btn:hover { border-color: rgba(255,255,255,0.2); color: #fff; }
-
 .nav-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 16px;
-  cursor: pointer;
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.25);
-  transition: all 0.2s;
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 16px; cursor: pointer;
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(255,255,255,0.25); transition: all 0.2s;
   border-left: 2px solid transparent;
 }
 .nav-item:hover { color: rgba(255,255,255,0.6); }
 .nav-item.active { color: rgba(255,255,255,0.8); border-left-color: rgba(255,255,255,0.4); }
 .nav-count {
-  margin-left: auto;
-  font-size: 9px;
-  opacity: 0.5;
-  background: rgba(255,255,255,0.07);
-  padding: 1px 5px;
-  border-radius: 8px;
+  margin-left: auto; font-size: 9px; opacity: 0.5;
+  background: rgba(255,255,255,0.07); padding: 1px 5px; border-radius: 8px;
 }
-
 .sidebar-section {
-  margin-top: 20px;
-  padding: 0 16px;
-  font-size: 9px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  opacity: 0.15;
-  margin-bottom: 8px;
+  margin-top: 20px; padding: 0 16px;
+  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  opacity: 0.15; margin-bottom: 8px;
 }
 
-/* ── EMAIL LIST ── */
 .email-list-pane {
-  width: 320px;
-  border-right: 1px solid rgba(255,255,255,0.05);
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
+  width: 320px; border-right: 1px solid rgba(255,255,255,0.05);
+  display: flex; flex-direction: column; flex-shrink: 0;
 }
 .pane-header {
-  padding: 14px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
+  padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.05);
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
 }
-.pane-title {
-  font-size: 10px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  opacity: 0.4;
-}
+.pane-title { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; opacity: 0.4; }
 .pane-actions { margin-left: auto; display: flex; gap: 4px; }
-
-.search-bar {
-  padding: 10px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  flex-shrink: 0;
-}
+.search-bar { padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; }
 .search-bar input {
-  width: 100%;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 2px;
-  color: #fff;
-  font-family: inherit;
-  font-size: 11px;
-  padding: 6px 10px;
-  outline: none;
-  transition: border-color 0.2s;
+  width: 100%; background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07); border-radius: 2px;
+  color: #fff; font-family: inherit; font-size: 11px;
+  padding: 6px 10px; outline: none; transition: border-color 0.2s;
 }
 .search-bar input:focus { border-color: rgba(255,255,255,0.15); }
 .search-bar input::placeholder { color: rgba(255,255,255,0.1); }
-
 .email-list { overflow-y: auto; flex: 1; }
 .email-item {
-  padding: 12px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-  cursor: pointer;
-  transition: background 0.15s;
-  position: relative;
+  padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.04);
+  cursor: pointer; transition: background 0.15s; position: relative;
 }
 .email-item:hover { background: rgba(255,255,255,0.025); }
 .email-item.active { background: rgba(255,255,255,0.04); }
 .email-item.unread .email-from { color: rgba(255,255,255,0.9); font-weight: bold; }
 .email-item.unread::before {
-  content: '';
-  position: absolute;
-  left: 6px; top: 50%;
-  transform: translateY(-50%);
-  width: 4px; height: 4px;
-  border-radius: 50%;
-  background: rgba(88,101,242,0.8);
+  content: ''; position: absolute; left: 6px; top: 50%;
+  transform: translateY(-50%); width: 4px; height: 4px;
+  border-radius: 50%; background: rgba(88,101,242,0.8);
 }
 .email-from { font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .email-subject { font-size: 11px; color: rgba(255,255,255,0.35); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
@@ -257,282 +231,147 @@ a:hover { color: rgba(255,255,255,0.8); }
 .email-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
 .email-time { font-size: 9px; color: rgba(255,255,255,0.2); letter-spacing: 1px; white-space: nowrap; }
 
-/* ── DETAIL PANE ── */
 .detail-pane { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 .detail-empty {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.1;
-  font-size: 10px;
-  letter-spacing: 4px;
-  text-transform: uppercase;
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  opacity: 0.1; font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
 }
-.detail-header {
-  padding: 16px 24px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  flex-shrink: 0;
-}
-.detail-subject {
-  font-size: 15px;
-  color: rgba(255,255,255,0.8);
-  margin-bottom: 10px;
-  line-height: 1.4;
-}
-.detail-meta-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.detail-meta {
-  font-size: 10px;
-  letter-spacing: 1px;
-  color: rgba(255,255,255,0.25);
-}
+.detail-header { padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; }
+.detail-subject { font-size: 15px; color: rgba(255,255,255,0.8); margin-bottom: 10px; line-height: 1.4; }
+.detail-meta-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.detail-meta { font-size: 10px; letter-spacing: 1px; color: rgba(255,255,255,0.25); }
 .detail-meta span { color: rgba(255,255,255,0.5); }
 .detail-actions { margin-left: auto; display: flex; gap: 6px; }
 .detail-body { flex: 1; overflow-y: auto; padding: 24px; }
-.detail-body-text {
-  font-size: 13px;
-  color: rgba(255,255,255,0.55);
-  line-height: 1.8;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-.detail-body iframe {
-  width: 100%;
-  border: none;
-  min-height: 400px;
-}
-.detail-body-html {
-  color: rgba(255,255,255,0.55);
-  font-size: 13px;
-  line-height: 1.8;
-}
+.detail-body-text { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.8; white-space: pre-wrap; word-break: break-word; }
+.detail-body-html { color: rgba(255,255,255,0.55); font-size: 13px; line-height: 1.8; }
 .detail-body-html a { color: rgba(88,101,242,0.8); }
 
-/* ── REPLY ── */
-.reply-area {
-  border-top: 1px solid rgba(255,255,255,0.05);
-  padding: 16px 24px;
-  flex-shrink: 0;
-}
+.reply-area { border-top: 1px solid rgba(255,255,255,0.05); padding: 16px 24px; flex-shrink: 0; }
 .reply-area textarea {
-  width: 100%;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 2px;
-  color: rgba(255,255,255,0.7);
-  font-family: inherit;
-  font-size: 12px;
-  line-height: 1.7;
-  padding: 10px 14px;
-  resize: vertical;
-  min-height: 80px;
-  outline: none;
-  transition: border-color 0.2s;
+  width: 100%; background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.07); border-radius: 2px;
+  color: rgba(255,255,255,0.7); font-family: inherit; font-size: 12px;
+  line-height: 1.7; padding: 10px 14px; resize: vertical;
+  min-height: 80px; outline: none; transition: border-color 0.2s;
 }
 .reply-area textarea:focus { border-color: rgba(255,255,255,0.15); }
 .reply-area textarea::placeholder { color: rgba(255,255,255,0.1); }
 .reply-actions { display: flex; gap: 8px; margin-top: 10px; }
 
-/* ── COMPOSE MODAL ── */
 .modal-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.8);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 100;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+  display: flex; align-items: center; justify-content: center; z-index: 100;
 }
 .modal {
-  background: #0a0a0a;
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 2px;
-  width: 560px;
-  max-width: 95vw;
-  display: flex;
-  flex-direction: column;
+  background: #0a0a0a; border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 2px; width: 560px; max-width: 95vw;
+  display: flex; flex-direction: column;
 }
 .modal-header {
-  padding: 14px 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 10px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  opacity: 0.4;
+  padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.05);
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 10px; letter-spacing: 3px; text-transform: uppercase; opacity: 0.4;
 }
 .modal-field {
-  padding: 10px 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  padding: 10px 20px; border-bottom: 1px solid rgba(255,255,255,0.05);
+  display: flex; align-items: center; gap: 12px;
 }
 .modal-field label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.3; width: 40px; flex-shrink: 0; }
 .modal-field input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: rgba(255,255,255,0.7);
-  font-family: inherit;
-  font-size: 12px;
-  outline: none;
+  flex: 1; background: transparent; border: none;
+  color: rgba(255,255,255,0.7); font-family: inherit; font-size: 12px; outline: none;
 }
 .modal-field input::placeholder { color: rgba(255,255,255,0.1); }
+.modal-from { font-size: 11px; color: rgba(255,255,255,0.25); letter-spacing: 1px; }
 .modal-body { padding: 16px 20px; }
 .modal-body textarea {
-  width: 100%;
-  background: transparent;
-  border: none;
-  color: rgba(255,255,255,0.6);
-  font-family: inherit;
-  font-size: 12px;
-  line-height: 1.8;
-  outline: none;
-  resize: none;
-  min-height: 200px;
+  width: 100%; background: transparent; border: none;
+  color: rgba(255,255,255,0.6); font-family: inherit; font-size: 12px;
+  line-height: 1.8; outline: none; resize: none; min-height: 200px;
 }
 .modal-body textarea::placeholder { color: rgba(255,255,255,0.1); }
 .modal-footer {
-  padding: 12px 20px;
-  border-top: 1px solid rgba(255,255,255,0.05);
-  display: flex;
-  gap: 8px;
-  align-items: center;
+  padding: 12px 20px; border-top: 1px solid rgba(255,255,255,0.05);
+  display: flex; gap: 8px; align-items: center;
 }
 
-/* ── TOAST ── */
 .toast {
-  position: fixed;
-  bottom: 24px; right: 24px;
-  background: #111;
-  border: 1px solid rgba(255,255,255,0.08);
-  padding: 12px 20px;
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  opacity: 0;
-  transition: opacity 0.3s;
-  z-index: 200;
-  border-radius: 2px;
+  position: fixed; bottom: 24px; right: 24px;
+  background: #111; border: 1px solid rgba(255,255,255,0.08);
+  padding: 12px 20px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  opacity: 0; transition: opacity 0.3s; z-index: 200; border-radius: 2px; pointer-events: none;
 }
 .toast.show { opacity: 1; }
 .toast.err { border-color: rgba(255,80,80,0.2); color: rgba(255,80,80,0.7); }
 .toast.ok  { border-color: rgba(80,200,100,0.2); color: rgba(80,200,100,0.7); }
 
-/* ── LOADING ── */
 .loader {
-  display: inline-block;
-  width: 12px; height: 12px;
+  display: inline-block; width: 12px; height: 12px;
   border: 1px solid rgba(255,255,255,0.1);
   border-top-color: rgba(255,255,255,0.4);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  border-radius: 50%; animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .fade-in { animation: fadeIn 0.4s ease forwards; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-/* ── REFRESH INDICATOR ── */
-.live-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: rgba(80,200,100,0.6);
-  animation: pulse 2s ease-in-out infinite;
-  display: inline-block;
-}
-@keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
-
-/* ── TABS ── */
-.tab-bar {
-  display: flex;
-  gap: 0;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  flex-shrink: 0;
-}
-.tab {
-  padding: 8px 16px;
-  font-size: 9px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  cursor: pointer;
-  color: rgba(255,255,255,0.2);
-  border-bottom: 1px solid transparent;
-  transition: all 0.2s;
-}
-.tab:hover { color: rgba(255,255,255,0.5); }
-.tab.active { color: rgba(255,255,255,0.7); border-bottom-color: rgba(255,255,255,0.4); }
-
-/* ── EMPTY STATE ── */
 .empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 200px;
-  gap: 8px;
-  opacity: 0.2;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; height: 200px; gap: 8px; opacity: 0.2;
 }
 .empty-state p { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; }
-
-/* ── REGISTER ── */
-#register-screen {
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  display: none;
-}
 </style>
 </head>
 <body>
 
-<!-- AUTH -->
-<div id="auth-screen" class="fade-in">
+<!-- LOGIN -->
+<div id="login-screen" class="auth-screen fade-in">
   <div class="auth-box">
     <div class="auth-title">mail.wimp.best</div>
-    <div class="auth-field">
-      <input type="text" id="login-email" placeholder="email" autocomplete="email" autofocus>
-      <div class="field-line"></div>
+    <div class="username-wrap">
+      <input type="text" id="login-username" placeholder="username"
+             autocomplete="username" autofocus
+             oninput="cleanUsername(this)">
+      <span class="username-suffix">@wimp.best</span>
+      <div class="uline"></div>
     </div>
     <div class="auth-field">
-      <input type="password" id="login-password" placeholder="password" autocomplete="current-password">
-      <div class="field-line"></div>
+      <input type="password" id="login-password" placeholder="password"
+             autocomplete="current-password">
+      <div class="fline"></div>
     </div>
     <div class="err" id="login-err"></div>
     <button class="btn" id="login-btn" onclick="doLogin()">enter</button>
-    <div class="auth-links">
-      <a href="#" onclick="showRegister()">need an account?</a>
-    </div>
+    <div class="auth-links"><a href="#" onclick="showScreen('register')">need an account?</a></div>
   </div>
 </div>
 
 <!-- REGISTER -->
-<div id="register-screen" class="fade-in" style="display:none; height:100vh; align-items:center; justify-content:center;">
+<div id="register-screen" class="auth-screen fade-in" style="display:none;">
   <div class="auth-box">
     <div class="auth-title">create account</div>
+    <div class="username-wrap">
+      <input type="text" id="reg-username" placeholder="username"
+             autocomplete="username"
+             oninput="cleanUsername(this)">
+      <span class="username-suffix">@wimp.best</span>
+      <div class="uline"></div>
+    </div>
+    <div class="auth-hint">letters · numbers · dots · dashes only</div>
     <div class="auth-field">
-      <input type="text" id="reg-username" placeholder="username" autocomplete="username">
-      <div class="field-line"></div>
+      <input type="password" id="reg-password" placeholder="password"
+             autocomplete="new-password">
+      <div class="fline"></div>
     </div>
     <div class="auth-field">
-      <input type="email" id="reg-email" placeholder="email" autocomplete="email">
-      <div class="field-line"></div>
-    </div>
-    <div class="auth-field">
-      <input type="password" id="reg-password" placeholder="password" autocomplete="new-password">
-      <div class="field-line"></div>
+      <input type="password" id="reg-password2" placeholder="confirm password"
+             autocomplete="new-password">
+      <div class="fline"></div>
     </div>
     <div class="err" id="reg-err"></div>
-    <div class="ok" id="reg-ok"></div>
+    <div class="ok"  id="reg-ok"></div>
     <button class="btn" id="reg-btn" onclick="doRegister()">register</button>
-    <div class="auth-links">
-      <a href="#" onclick="showLogin()">have an account?</a>
-    </div>
+    <div class="auth-links"><a href="#" onclick="showScreen('login')">have an account?</a></div>
   </div>
 </div>
 
@@ -540,39 +379,28 @@ a:hover { color: rgba(255,255,255,0.8); }
 <div id="app" style="display:none; flex-direction:column; height:100vh;">
   <div class="topbar">
     <div class="topbar-logo">mail.wimp.best</div>
-    <span class="live-dot" title="Live updates active"></span>
-    <div id="topbar-email" class="topbar-email"></div>
+    <span class="live-dot"></span>
+    <div id="topbar-addr" class="topbar-addr"></div>
     <div class="topbar-right">
-      <span id="topbar-user" class="topbar-user"></span>
       <button class="btn-icon" onclick="doLogout()">sign out</button>
     </div>
   </div>
   <div class="main">
-    <!-- Sidebar -->
     <div class="sidebar">
       <button class="compose-btn" onclick="openCompose()">+ compose</button>
-      <div class="nav-item active" id="nav-inbox" onclick="setFolder('inbox')">
-        <span>inbox</span>
-        <span class="nav-count" id="unread-count"></span>
-      </div>
-      <div class="nav-item" id="nav-sent" onclick="setFolder('sent')">
-        <span>sent</span>
-      </div>
-      <div class="nav-item" id="nav-trash" onclick="setFolder('trash')">
-        <span>trash</span>
-      </div>
+      <div class="nav-item active" id="nav-inbox"   onclick="setFolder('inbox')">inbox <span class="nav-count" id="unread-count"></span></div>
+      <div class="nav-item"        id="nav-sent"    onclick="setFolder('sent')">sent</div>
+      <div class="nav-item"        id="nav-trash"   onclick="setFolder('trash')">trash</div>
       <div class="sidebar-section">filters</div>
-      <div class="nav-item" id="nav-unread" onclick="setFolder('unread')">unread</div>
-      <div class="nav-item" id="nav-starred" onclick="setFolder('starred')">starred</div>
+      <div class="nav-item"        id="nav-unread"  onclick="setFolder('unread')">unread</div>
+      <div class="nav-item"        id="nav-starred" onclick="setFolder('starred')">starred</div>
     </div>
-
-    <!-- Email List -->
     <div class="email-list-pane">
       <div class="pane-header">
         <div class="pane-title" id="pane-title">inbox</div>
         <div class="pane-actions">
-          <button class="btn-icon" onclick="refreshEmails()" title="Refresh">↻</button>
-          <button class="btn-icon" onclick="markAllRead()" title="Mark all read">✓</button>
+          <button class="btn-icon" onclick="refreshEmails()">↻</button>
+          <button class="btn-icon" onclick="markAllRead()">✓</button>
         </div>
       </div>
       <div class="search-bar">
@@ -582,9 +410,7 @@ a:hover { color: rgba(255,255,255,0.8); }
         <div class="empty-state"><div class="loader"></div></div>
       </div>
     </div>
-
-    <!-- Detail Pane -->
-    <div class="detail-pane" id="detail-pane">
+    <div class="detail-pane">
       <div class="detail-empty" id="detail-empty">select an email</div>
       <div id="detail-view" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
         <div class="detail-header">
@@ -594,13 +420,13 @@ a:hover { color: rgba(255,255,255,0.8); }
             <div class="detail-meta">to: <span id="detail-to"></span></div>
             <div class="detail-meta"><span id="detail-date"></span></div>
             <div class="detail-actions">
-              <button class="btn-icon" id="btn-star" onclick="toggleStar()">☆</button>
+              <button class="btn-icon" id="btn-star" onclick="toggleStar()">&#9734;</button>
               <button class="btn-icon btn-danger" onclick="moveToTrash()">trash</button>
             </div>
           </div>
         </div>
         <div class="detail-body" id="detail-body"></div>
-        <div class="reply-area" id="reply-area">
+        <div class="reply-area">
           <textarea id="reply-text" placeholder="reply..." rows="3"></textarea>
           <div class="reply-actions">
             <button class="btn btn-sm btn-primary" onclick="sendReply()">send reply</button>
@@ -612,12 +438,16 @@ a:hover { color: rgba(255,255,255,0.8); }
   </div>
 </div>
 
-<!-- COMPOSE MODAL -->
+<!-- COMPOSE -->
 <div class="modal-overlay" id="compose-modal" style="display:none;">
   <div class="modal">
     <div class="modal-header">
       <span>new message</span>
-      <button class="btn-icon" onclick="closeCompose()">✕</button>
+      <button class="btn-icon" onclick="closeCompose()">&#x2715;</button>
+    </div>
+    <div class="modal-field">
+      <label>from</label>
+      <span class="modal-from" id="compose-from-label"></span>
     </div>
     <div class="modal-field">
       <label>to</label>
@@ -638,279 +468,286 @@ a:hover { color: rgba(255,255,255,0.8); }
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ── CONFIG ──
+const DOMAIN       = 'wimp.best';
 const SUPABASE_URL = 'https://dyxxpuirsuqtuehvijdf.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_8IaNO6bOuQHZdVyAPeP1Qg_sjjcGcVy';
 const MAILGUN_KEY  = '445d9949d4e2b6d36db7eea3c3a73421';
 
-// ── STATE ──
-let currentUser = null;
+let currentUser    = null;
 let currentSession = null;
-let emails = [];
-let currentEmail = null;
-let currentFolder = 'inbox';
-let refreshInterval = null;
+let emails         = [];
+let currentEmail   = null;
+let currentFolder  = 'inbox';
+let refreshTimer   = null;
+let myEmail        = '';
 
-// ── SUPABASE HELPER ──
+// strip anything that isn't a valid username char, force lowercase
+function cleanUsername(el) {
+  const v = el.value.replace(/[^a-zA-Z0-9.\-_]/g, '').toLowerCase();
+  if (el.value !== v) el.value = v;
+}
+
+function buildEmail(username) {
+  return username.trim().toLowerCase() + '@' + DOMAIN;
+}
+
+function isValidUsername(u) {
+  return /^[a-z0-9.\-_]{2,40}$/.test(u);
+}
+
+function showScreen(name) {
+  document.getElementById('login-screen').style.display    = name === 'login'    ? 'flex' : 'none';
+  document.getElementById('register-screen').style.display = name === 'register' ? 'flex' : 'none';
+  document.getElementById('app').style.display             = name === 'app'      ? 'flex' : 'none';
+  if (name === 'login')    { document.getElementById('login-username').focus(); }
+  if (name === 'register') { document.getElementById('reg-username').focus(); }
+}
+
+// ── SUPABASE ──
 async function sb(path, opts = {}) {
   const headers = {
     'apikey': SUPABASE_KEY,
     'Content-Type': 'application/json',
     ...(opts.headers || {})
   };
-  if (currentSession?.access_token) {
-    headers['Authorization'] = `Bearer ${currentSession.access_token}`;
+  if (currentSession && currentSession.access_token) {
+    headers['Authorization'] = 'Bearer ' + currentSession.access_token;
   }
-  const r = await fetch(`${SUPABASE_URL}${path}`, {
-    ...opts,
-    headers
-  });
-  if (!r.ok && r.status !== 200) {
-    const text = await r.text().catch(() => '');
-    throw new Error(text || r.statusText);
-  }
-  return r.json().catch(() => ({}));
+  const r = await fetch(SUPABASE_URL + path, Object.assign({}, opts, { headers }));
+  const text = await r.text();
+  if (!r.ok) throw new Error(text || r.statusText);
+  try { return JSON.parse(text); } catch(e) { return {}; }
 }
 
 async function sbAuth(path, body) {
-  const r = await fetch(`${SUPABASE_URL}/auth/v1${path}`, {
+  const r = await fetch(SUPABASE_URL + '/auth/v1' + path, {
     method: 'POST',
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Content-Type': 'application/json'
-    },
+    headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
     body: JSON.stringify(body)
   });
   return r.json();
 }
 
-// ── AUTH ──
+// ── LOGIN ──
 async function doLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  const pass  = document.getElementById('login-password').value;
-  const errEl = document.getElementById('login-err');
+  const username = document.getElementById('login-username').value.trim().toLowerCase();
+  const pass     = document.getElementById('login-password').value;
+  const errEl    = document.getElementById('login-err');
   errEl.textContent = '';
-  if (!email || !pass) { errEl.textContent = 'fill in both fields'; return; }
 
-  const btn = document.getElementById('login-btn');
-  btn.disabled = true;
-  btn.textContent = '...';
+  if (!username)              { errEl.textContent = 'enter your username'; return; }
+  if (!isValidUsername(username)) { errEl.textContent = 'invalid username'; return; }
+  if (!pass)                  { errEl.textContent = 'enter your password'; return; }
+
+  const email = buildEmail(username);
+  const btn   = document.getElementById('login-btn');
+  btn.disabled = true; btn.textContent = '...';
 
   try {
-    const data = await sbAuth('/token?grant_type=password', { email, password: pass });
-    if (data.error) { errEl.textContent = data.error_description || data.error; return; }
+    const data = await sbAuth('/token?grant_type=password', { email: email, password: pass });
+    if (data.error || data.error_description) {
+      errEl.textContent = 'wrong username or password';
+      document.getElementById('login-password').value = '';
+      return;
+    }
     currentSession = data;
-    currentUser = data.user;
+    currentUser    = data.user;
+    myEmail        = email;
     bootApp();
   } catch(e) {
     errEl.textContent = 'connection failed';
   } finally {
-    btn.disabled = false;
-    btn.textContent = 'enter';
+    btn.disabled = false; btn.textContent = 'enter';
   }
 }
 
+// ── REGISTER ──
 async function doRegister() {
-  const username = document.getElementById('reg-username').value.trim();
-  const email    = document.getElementById('reg-email').value.trim();
+  const username = document.getElementById('reg-username').value.trim().toLowerCase();
   const pass     = document.getElementById('reg-password').value;
+  const pass2    = document.getElementById('reg-password2').value;
   const errEl    = document.getElementById('reg-err');
   const okEl     = document.getElementById('reg-ok');
   errEl.textContent = ''; okEl.textContent = '';
-  if (!username || !email || !pass) { errEl.textContent = 'fill in all fields'; return; }
 
-  const btn = document.getElementById('reg-btn');
+  if (!username)                  { errEl.textContent = 'choose a username'; return; }
+  if (!isValidUsername(username)) { errEl.textContent = 'letters, numbers, dots and dashes only (min 2 chars)'; return; }
+  if (!pass)                      { errEl.textContent = 'enter a password'; return; }
+  if (pass.length < 6)            { errEl.textContent = 'password must be at least 6 characters'; return; }
+  if (pass !== pass2)             { errEl.textContent = 'passwords do not match'; return; }
+
+  const email = buildEmail(username);
+  const btn   = document.getElementById('reg-btn');
   btn.disabled = true; btn.textContent = '...';
 
   try {
     const data = await sbAuth('/signup', {
-      email, password: pass,
-      data: { username, display_name: username }
+      email:    email,
+      password: pass,
+      data:     { username: username, display_name: username, mail_address: email }
     });
-    if (data.error) { errEl.textContent = data.error_description || data.error; return; }
-    okEl.textContent = 'check your email to confirm, then sign in';
-    setTimeout(() => showLogin(), 3000);
+
+    if (data.error || data.error_description) {
+      const msg = (data.error_description || data.error || '').toLowerCase();
+      if (msg.includes('already') || msg.includes('exists')) {
+        errEl.textContent = 'username already taken';
+      } else {
+        errEl.textContent = data.error_description || data.error || 'registration failed';
+      }
+      return;
+    }
+
+    // If email confirmation is disabled, Supabase returns session immediately
+    if (data.access_token) {
+      currentSession = data;
+      currentUser    = data.user;
+      myEmail        = email;
+      bootApp();
+      return;
+    }
+
+    okEl.textContent = 'account created! your address: ' + email;
+    setTimeout(function() { showScreen('login'); }, 4000);
   } catch(e) {
-    errEl.textContent = 'registration failed';
+    errEl.textContent = 'connection failed';
   } finally {
     btn.disabled = false; btn.textContent = 'register';
   }
 }
 
+// ── LOGOUT ──
 function doLogout() {
-  currentSession = null; currentUser = null;
-  clearInterval(refreshInterval);
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('auth-screen').style.display = 'flex';
+  currentSession = null; currentUser = null; myEmail = '';
+  emails = []; currentEmail = null; currentFolder = 'inbox';
+  clearInterval(refreshTimer);
+  document.getElementById('login-username').value = '';
   document.getElementById('login-password').value = '';
+  document.getElementById('login-err').textContent = '';
+  showScreen('login');
 }
 
-function showRegister() {
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('register-screen').style.display = 'flex';
-}
-function showLogin() {
-  document.getElementById('register-screen').style.display = 'none';
-  document.getElementById('auth-screen').style.display = 'flex';
-}
-
-// ── BOOT APP ──
+// ── BOOT ──
 function bootApp() {
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('register-screen').style.display = 'none';
-  const app = document.getElementById('app');
-  app.style.display = 'flex';
-
-  const email = currentUser?.email || '';
-  const username = currentUser?.user_metadata?.username || email.split('@')[0];
-  document.getElementById('topbar-email').textContent = email;
-  document.getElementById('topbar-user').textContent = username;
-
-  loadEmails();
-  refreshInterval = setInterval(loadEmails, 15000);
+  const username = (currentUser && currentUser.user_metadata && currentUser.user_metadata.username)
+    || myEmail.split('@')[0];
+  myEmail = buildEmail(username);
+  document.getElementById('topbar-addr').textContent      = myEmail;
+  document.getElementById('compose-from-label').textContent = myEmail;
+  showScreen('app');
+  document.getElementById('email-list').innerHTML =
+    '<div class="empty-state"><div class="loader"></div></div>';
+  setFolder('inbox');
+  clearInterval(refreshTimer);
+  refreshTimer = setInterval(loadEmails, 15000);
 }
 
-// ── LOAD EMAILS ──
+// ── EMAILS ──
 async function loadEmails() {
   try {
-    let query = `/rest/v1/emails?select=*&order=received_at.desc.nullslast,created_at.desc`;
-
-    // Filter by folder
-    if (currentFolder === 'inbox') {
-      query += `&folder=eq.inbox&is_deleted=eq.false`;
-    } else if (currentFolder === 'sent') {
-      query += `&folder=eq.sent&is_deleted=eq.false`;
-    } else if (currentFolder === 'trash') {
-      query += `&is_deleted=eq.true`;
-    } else if (currentFolder === 'unread') {
-      query += `&is_read=eq.false&is_deleted=eq.false`;
-    } else if (currentFolder === 'starred') {
-      query += `&is_starred=eq.true&is_deleted=eq.false`;
-    }
-
-    const data = await sb(query, {
-      headers: { 'Prefer': 'return=representation' }
-    });
+    var q = '/rest/v1/emails?select=*&order=received_at.desc.nullslast,created_at.desc';
+    if (currentFolder === 'inbox')   q += '&folder=eq.inbox&is_deleted=eq.false';
+    if (currentFolder === 'sent')    q += '&folder=eq.sent&is_deleted=eq.false';
+    if (currentFolder === 'trash')   q += '&is_deleted=eq.true';
+    if (currentFolder === 'unread')  q += '&is_read=eq.false&is_deleted=eq.false';
+    if (currentFolder === 'starred') q += '&is_starred=eq.true&is_deleted=eq.false';
+    const data = await sb(q, { headers: { 'Prefer': 'return=representation' } });
     emails = Array.isArray(data) ? data : [];
     renderEmailList(emails);
     updateUnreadCount();
   } catch(e) {
-    // Table might not exist yet, show empty
     emails = [];
     renderEmailList([]);
   }
 }
 
 function renderEmailList(list) {
-  const el = document.getElementById('email-list');
-  if (!list.length) {
-    el.innerHTML = `<div class="empty-state"><p>no mail</p></div>`;
-    return;
-  }
-  el.innerHTML = list.map(e => {
-    const from = e.from_address || e.from_name || 'unknown';
-    const subject = e.subject || '(no subject)';
-    const preview = stripHtml(e.body_text || e.body_html || '');
-    const date = formatDate(e.received_at || e.created_at);
-    const isUnread = !e.is_read;
-    const isActive = currentEmail?.id === e.id;
-    return `<div class="email-item ${isUnread ? 'unread' : ''} ${isActive ? 'active' : ''}"
-               onclick="openEmail('${e.id}')"
-               data-id="${e.id}">
-      <div class="email-meta">
-        <div class="email-from">${esc(truncate(from, 28))}</div>
-        <div class="email-time">${date}</div>
-      </div>
-      <div class="email-subject">${esc(truncate(subject, 36))}</div>
-      <div class="email-preview">${esc(truncate(preview, 55))}</div>
-    </div>`;
+  var el = document.getElementById('email-list');
+  if (!list.length) { el.innerHTML = '<div class="empty-state"><p>no mail</p></div>'; return; }
+  el.innerHTML = list.map(function(e) {
+    var from    = e.from_name || e.from_address || 'unknown';
+    var subject = e.subject || '(no subject)';
+    var preview = stripHtml(e.body_text || e.body_html || '');
+    var date    = formatDate(e.received_at || e.created_at);
+    var unread  = !e.is_read;
+    var active  = currentEmail && currentEmail.id === e.id;
+    return '<div class="email-item ' + (unread ? 'unread' : '') + ' ' + (active ? 'active' : '') + '"'
+      + ' onclick="openEmail(\'' + e.id + '\')" data-id="' + e.id + '">'
+      + '<div class="email-meta">'
+      + '<div class="email-from">' + esc(truncate(from, 28)) + '</div>'
+      + '<div class="email-time">' + date + '</div>'
+      + '</div>'
+      + '<div class="email-subject">' + esc(truncate(subject, 36)) + '</div>'
+      + '<div class="email-preview">' + esc(truncate(preview, 55)) + '</div>'
+      + '</div>';
   }).join('');
 }
 
 function filterEmails(q) {
   q = q.toLowerCase();
-  const filtered = emails.filter(e =>
-    (e.from_address || '').toLowerCase().includes(q) ||
-    (e.from_name || '').toLowerCase().includes(q) ||
-    (e.subject || '').toLowerCase().includes(q) ||
-    (e.body_text || '').toLowerCase().includes(q)
-  );
-  renderEmailList(filtered);
+  renderEmailList(emails.filter(function(e) {
+    return (e.from_address||'').toLowerCase().includes(q)
+      || (e.from_name||'').toLowerCase().includes(q)
+      || (e.subject||'').toLowerCase().includes(q)
+      || (e.body_text||'').toLowerCase().includes(q);
+  }));
 }
 
-// ── OPEN EMAIL ──
 async function openEmail(id) {
-  const email = emails.find(e => e.id === id);
+  var email = emails.find(function(e) { return e.id === id; });
   if (!email) return;
   currentEmail = email;
-
-  // Mark active in list
-  document.querySelectorAll('.email-item').forEach(el => el.classList.remove('active'));
-  document.querySelector(`[data-id="${id}"]`)?.classList.add('active');
-
-  // Show detail
+  document.querySelectorAll('.email-item').forEach(function(el) { el.classList.remove('active'); });
+  var item = document.querySelector('[data-id="' + id + '"]');
+  if (item) item.classList.add('active');
   document.getElementById('detail-empty').style.display = 'none';
-  const dv = document.getElementById('detail-view');
-  dv.style.display = 'flex';
-
+  document.getElementById('detail-view').style.display  = 'flex';
   document.getElementById('detail-subject').textContent = email.subject || '(no subject)';
-  document.getElementById('detail-from').textContent = email.from_address || email.from_name || 'unknown';
-  document.getElementById('detail-to').textContent = email.to_address || currentUser?.email || '';
-  document.getElementById('detail-date').textContent = formatDateTime(email.received_at || email.created_at);
-
-  // Star state
-  const btnStar = document.getElementById('btn-star');
-  btnStar.textContent = email.is_starred ? '★' : '☆';
+  document.getElementById('detail-from').textContent    = email.from_address || email.from_name || 'unknown';
+  document.getElementById('detail-to').textContent      = email.to_address || myEmail;
+  document.getElementById('detail-date').textContent    = formatDateTime(email.received_at || email.created_at);
+  var btnStar = document.getElementById('btn-star');
+  btnStar.innerHTML = email.is_starred ? '&#9733;' : '&#9734;';
   btnStar.style.color = email.is_starred ? 'rgba(255,200,50,0.8)' : '';
-
-  // Body
-  const body = document.getElementById('detail-body');
+  var body = document.getElementById('detail-body');
   if (email.body_html) {
-    body.innerHTML = `<div class="detail-body-html">${sanitizeHtml(email.body_html)}</div>`;
+    body.innerHTML = '<div class="detail-body-html">' + sanitizeHtml(email.body_html) + '</div>';
   } else {
-    body.innerHTML = `<div class="detail-body-text">${esc(email.body_text || '(empty)')}</div>`;
+    body.innerHTML = '<div class="detail-body-text">' + esc(email.body_text || '(empty)') + '</div>';
   }
-
-  // Pre-fill reply
   document.getElementById('reply-text').value = '';
-  document.getElementById('reply-text').placeholder = `reply to ${email.from_address || ''}...`;
-
-  // Mark as read
+  document.getElementById('reply-text').placeholder = 'reply to ' + (email.from_address || '') + '...';
   if (!email.is_read) {
     email.is_read = true;
+    if (item) item.classList.remove('unread');
+    updateUnreadCount();
     try {
-      await sb(`/rest/v1/emails?id=eq.${id}`, {
+      await sb('/rest/v1/emails?id=eq.' + id, {
         method: 'PATCH',
         headers: { 'Prefer': 'return=minimal' },
         body: JSON.stringify({ is_read: true })
       });
-      // Update in list
-      document.querySelector(`[data-id="${id}"]`)?.classList.remove('unread');
-      updateUnreadCount();
     } catch(e) {}
   }
 }
 
 function closeDetail() {
   currentEmail = null;
-  document.getElementById('detail-view').style.display = 'none';
+  document.getElementById('detail-view').style.display  = 'none';
   document.getElementById('detail-empty').style.display = 'flex';
-  document.querySelectorAll('.email-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.email-item').forEach(function(el) { el.classList.remove('active'); });
 }
 
-// ── STAR / TRASH ──
 async function toggleStar() {
   if (!currentEmail) return;
   currentEmail.is_starred = !currentEmail.is_starred;
-  const btnStar = document.getElementById('btn-star');
-  btnStar.textContent = currentEmail.is_starred ? '★' : '☆';
-  btnStar.style.color = currentEmail.is_starred ? 'rgba(255,200,50,0.8)' : '';
+  var btn = document.getElementById('btn-star');
+  btn.innerHTML = currentEmail.is_starred ? '&#9733;' : '&#9734;';
+  btn.style.color = currentEmail.is_starred ? 'rgba(255,200,50,0.8)' : '';
   try {
-    await sb(`/rest/v1/emails?id=eq.${currentEmail.id}`, {
+    await sb('/rest/v1/emails?id=eq.' + currentEmail.id, {
       method: 'PATCH',
       headers: { 'Prefer': 'return=minimal' },
       body: JSON.stringify({ is_starred: currentEmail.is_starred })
@@ -921,7 +758,7 @@ async function toggleStar() {
 async function moveToTrash() {
   if (!currentEmail) return;
   try {
-    await sb(`/rest/v1/emails?id=eq.${currentEmail.id}`, {
+    await sb('/rest/v1/emails?id=eq.' + currentEmail.id, {
       method: 'PATCH',
       headers: { 'Prefer': 'return=minimal' },
       body: JSON.stringify({ is_deleted: true })
@@ -934,46 +771,46 @@ async function moveToTrash() {
 
 async function markAllRead() {
   try {
-    await sb(`/rest/v1/emails?is_read=eq.false&is_deleted=eq.false`, {
+    await sb('/rest/v1/emails?is_read=eq.false&is_deleted=eq.false', {
       method: 'PATCH',
       headers: { 'Prefer': 'return=minimal' },
       body: JSON.stringify({ is_read: true })
     });
-    emails.forEach(e => e.is_read = true);
+    emails.forEach(function(e) { e.is_read = true; });
     renderEmailList(emails);
     updateUnreadCount();
   } catch(e) {}
 }
 
-// ── FOLDER NAV ──
 function setFolder(folder) {
   currentFolder = folder;
   closeDetail();
-  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  document.getElementById(`nav-${folder}`)?.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(function(el) { el.classList.remove('active'); });
+  var nav = document.getElementById('nav-' + folder);
+  if (nav) nav.classList.add('active');
   document.getElementById('pane-title').textContent = folder;
   document.getElementById('search-input').value = '';
-  document.getElementById('email-list').innerHTML = `<div class="empty-state"><div class="loader"></div></div>`;
+  document.getElementById('email-list').innerHTML =
+    '<div class="empty-state"><div class="loader"></div></div>';
   loadEmails();
 }
 
 function updateUnreadCount() {
-  const count = emails.filter(e => !e.is_read && !e.is_deleted).length;
-  const el = document.getElementById('unread-count');
-  el.textContent = count > 0 ? count : '';
+  var n = emails.filter(function(e) { return !e.is_read && !e.is_deleted; }).length;
+  document.getElementById('unread-count').textContent = n > 0 ? n : '';
 }
 
 function refreshEmails() {
-  document.getElementById('email-list').innerHTML = `<div class="empty-state"><div class="loader"></div></div>`;
+  document.getElementById('email-list').innerHTML =
+    '<div class="empty-state"><div class="loader"></div></div>';
   loadEmails();
 }
 
-// ── COMPOSE ──
 function openCompose() {
   document.getElementById('compose-modal').style.display = 'flex';
-  document.getElementById('compose-to').value = '';
+  document.getElementById('compose-to').value      = '';
   document.getElementById('compose-subject').value = '';
-  document.getElementById('compose-body').value = '';
+  document.getElementById('compose-body').value    = '';
   document.getElementById('compose-status').textContent = '';
   document.getElementById('compose-to').focus();
 }
@@ -982,179 +819,135 @@ function closeCompose() {
 }
 
 async function sendCompose() {
-  const to      = document.getElementById('compose-to').value.trim();
-  const subject = document.getElementById('compose-subject').value.trim();
-  const body    = document.getElementById('compose-body').value.trim();
-  const status  = document.getElementById('compose-status');
-  if (!to || !body) { status.textContent = 'to and body required'; return; }
-
+  var to      = document.getElementById('compose-to').value.trim();
+  var subject = document.getElementById('compose-subject').value.trim();
+  var body    = document.getElementById('compose-body').value.trim();
+  var status  = document.getElementById('compose-status');
+  if (!to)   { status.textContent = 'enter a recipient'; return; }
+  if (!body) { status.textContent = 'message body empty'; return; }
   status.textContent = 'sending...';
-  const fromEmail = currentUser?.email || 'noreply@wimp.best';
-
   try {
-    // Send via Mailgun
-    const formData = new FormData();
-    formData.append('from', fromEmail);
-    formData.append('to', to);
-    formData.append('subject', subject || '(no subject)');
-    formData.append('text', body);
-
-    const mgRes = await fetch(`https://api.mailgun.net/v3/wimp.best/messages`, {
+    var fd = new FormData();
+    fd.append('from', myEmail);
+    fd.append('to', to);
+    fd.append('subject', subject || '(no subject)');
+    fd.append('text', body);
+    await fetch('https://api.mailgun.net/v3/' + DOMAIN + '/messages', {
       method: 'POST',
-      headers: {
-        'Authorization': 'Basic ' + btoa('api:' + MAILGUN_KEY)
-      },
-      body: formData
+      headers: { 'Authorization': 'Basic ' + btoa('api:' + MAILGUN_KEY) },
+      body: fd
     });
-
-    // Save to sent in Supabase regardless of Mailgun result
     await sb('/rest/v1/emails', {
       method: 'POST',
       headers: { 'Prefer': 'return=minimal' },
       body: JSON.stringify({
-        user_id: currentUser?.id,
-        from_address: fromEmail,
-        from_name: currentUser?.user_metadata?.username || '',
+        user_id: currentUser ? currentUser.id : null,
+        from_address: myEmail,
+        from_name: currentUser && currentUser.user_metadata ? currentUser.user_metadata.username : '',
         to_address: to,
         subject: subject || '(no subject)',
         body_text: body,
-        folder: 'sent',
-        is_read: true,
-        is_deleted: false,
-        is_starred: false,
+        folder: 'sent', is_read: true, is_deleted: false, is_starred: false,
         received_at: new Date().toISOString()
       })
     });
-
     status.textContent = 'sent!';
     toast('message sent');
-    setTimeout(closeCompose, 1500);
+    setTimeout(closeCompose, 1200);
     if (currentFolder === 'sent') loadEmails();
   } catch(e) {
-    status.textContent = 'failed to send';
+    status.textContent = 'failed';
     toast('send failed', true);
   }
 }
 
-// ── REPLY ──
 async function sendReply() {
   if (!currentEmail) return;
-  const body = document.getElementById('reply-text').value.trim();
+  var body = document.getElementById('reply-text').value.trim();
   if (!body) return;
-
-  const fromEmail = currentUser?.email || 'noreply@wimp.best';
-  const to = currentEmail.from_address || '';
-
+  var to = currentEmail.from_address || '';
   try {
-    const formData = new FormData();
-    formData.append('from', fromEmail);
-    formData.append('to', to);
-    formData.append('subject', 'Re: ' + (currentEmail.subject || ''));
-    formData.append('text', body);
-
-    await fetch(`https://api.mailgun.net/v3/wimp.best/messages`, {
+    var fd = new FormData();
+    fd.append('from', myEmail);
+    fd.append('to', to);
+    fd.append('subject', 'Re: ' + (currentEmail.subject || ''));
+    fd.append('text', body);
+    await fetch('https://api.mailgun.net/v3/' + DOMAIN + '/messages', {
       method: 'POST',
       headers: { 'Authorization': 'Basic ' + btoa('api:' + MAILGUN_KEY) },
-      body: formData
+      body: fd
     });
-
-    // Save reply to sent
     await sb('/rest/v1/emails', {
       method: 'POST',
       headers: { 'Prefer': 'return=minimal' },
       body: JSON.stringify({
-        user_id: currentUser?.id,
-        from_address: fromEmail,
+        user_id: currentUser ? currentUser.id : null,
+        from_address: myEmail,
         to_address: to,
         subject: 'Re: ' + (currentEmail.subject || ''),
         body_text: body,
-        folder: 'sent',
-        is_read: true,
-        is_deleted: false,
-        is_starred: false,
+        folder: 'sent', is_read: true, is_deleted: false, is_starred: false,
         received_at: new Date().toISOString()
       })
     });
-
     document.getElementById('reply-text').value = '';
     toast('reply sent');
-  } catch(e) {
-    toast('reply failed', true);
-  }
+  } catch(e) { toast('reply failed', true); }
 }
 
-// ── UTILS ──
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-
 function truncate(s, n) {
   s = String(s || '');
-  return s.length > n ? s.slice(0, n) + '…' : s;
+  return s.length > n ? s.slice(0, n) + '\u2026' : s;
 }
-
 function stripHtml(html) {
-  const tmp = document.createElement('div');
-  tmp.innerHTML = html;
-  return tmp.textContent || tmp.innerText || '';
+  var d = document.createElement('div');
+  d.innerHTML = html;
+  return d.textContent || d.innerText || '';
 }
-
 function sanitizeHtml(html) {
-  // Very basic sanitization - remove scripts
-  return html.replace(/<script[\s\S]*?<\/script>/gi, '')
-             .replace(/on\w+="[^"]*"/gi, '')
-             .replace(/javascript:/gi, '');
+  return html.replace(/<script[\s\S]*?<\/script>/gi,'')
+             .replace(/on\w+="[^"]*"/gi,'')
+             .replace(/javascript:/gi,'');
 }
-
 function formatDate(ts) {
   if (!ts) return '';
-  const d = new Date(ts);
-  const now = new Date();
-  if (d.toDateString() === now.toDateString()) {
-    return d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-  }
-  const diff = (now - d) / 86400000;
-  if (diff < 7) {
+  var d = new Date(ts), now = new Date();
+  if (d.toDateString() === now.toDateString())
+    return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  if ((now - d) < 7 * 86400000)
     return d.toLocaleDateString([], {weekday:'short'});
-  }
   return d.toLocaleDateString([], {month:'short', day:'numeric'});
 }
-
 function formatDateTime(ts) {
   if (!ts) return '';
-  return new Date(ts).toLocaleString([], {
-    month:'short', day:'numeric', year:'numeric',
-    hour:'2-digit', minute:'2-digit'
-  });
+  return new Date(ts).toLocaleString([], {month:'short', day:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit'});
 }
-
-function toast(msg, isErr = false) {
-  const el = document.getElementById('toast');
+function toast(msg, isErr) {
+  var el = document.getElementById('toast');
   el.textContent = msg;
-  el.className = `toast show ${isErr ? 'err' : 'ok'}`;
-  setTimeout(() => el.classList.remove('show'), 3000);
+  el.className = 'toast show ' + (isErr ? 'err' : 'ok');
+  setTimeout(function() { el.classList.remove('show'); }, 3000);
 }
 
-// ── KEYBOARD ──
-document.addEventListener('keydown', e => {
+document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
     if (document.getElementById('compose-modal').style.display !== 'none') closeCompose();
     else closeDetail();
   }
   if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
     e.preventDefault();
-    openCompose();
+    if (document.getElementById('app').style.display !== 'none') openCompose();
   }
 });
 
-document.querySelectorAll('#auth-screen input, #register-screen input').forEach(el => {
-  el.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      if (document.getElementById('auth-screen').style.display !== 'none') doLogin();
-      else doRegister();
-    }
-  });
-});
+document.getElementById('login-username').addEventListener('keydown', function(e) { if (e.key==='Enter') doLogin(); });
+document.getElementById('login-password').addEventListener('keydown', function(e) { if (e.key==='Enter') doLogin(); });
+document.getElementById('reg-username').addEventListener('keydown',   function(e) { if (e.key==='Enter') doRegister(); });
+document.getElementById('reg-password').addEventListener('keydown',   function(e) { if (e.key==='Enter') doRegister(); });
+document.getElementById('reg-password2').addEventListener('keydown',  function(e) { if (e.key==='Enter') doRegister(); });
 </script>
 </body>
 </html>
